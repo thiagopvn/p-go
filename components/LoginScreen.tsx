@@ -237,7 +237,7 @@ export const LoginScreen: React.FC = () => {
 
               <div>
                 <label htmlFor="cadastro-grad" className="block text-sm font-medium text-gray-700">
-                  Graduação <span className="text-red-500">*</span>
+                  Posto <span className="text-red-500">*</span>
                 </label>
                 <select
                   id="cadastro-grad"
