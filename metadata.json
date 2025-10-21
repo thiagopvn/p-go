@@ -1,0 +1,5 @@
+{
+  "name": "GOCG Permutas",
+  "description": "An application to manage and generate service swap requests for GOCG military personnel, with an administrative dashboard and document generation capabilities.",
+  "requestFramePermissions": []
+}
