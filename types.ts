@@ -4,8 +4,21 @@ export interface Militar {
   quadro: string;
   nome: string;
   unidade: string;
-  senha?: string; // Password for login (stored in Firestore)
+  senha?: string; // Password - optional in militares collection (requires registration)
   role?: 'admin' | 'user'; // User role
+}
+
+// Usuario type for registered users in 'usuarios' collection
+export interface Usuario {
+  rg: string; // Document ID and unique identifier
+  senha: string; // User-defined password (required for registered users)
+  role: 'admin' | 'user'; // User role
+  // The following fields are validated against 'militares' collection during registration:
+  grad: string;
+  quadro: string;
+  nome: string;
+  unidade: string;
+  createdAt?: Date; // When the user registered
 }
 
 export type Funcao = "COMANDANTE DO 1º SOCORRO" | "COMANDANTE DO 2º SOCORRO" | "BUSCA E SALVAMENTO";

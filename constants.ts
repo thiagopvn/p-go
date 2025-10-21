@@ -6,6 +6,53 @@ export const FUNCOES: Funcao[] = [
   "BUSCA E SALVAMENTO"
 ];
 
+// Listas extraídas dos militares para uso em dropdowns
+export const GRADUACOES = [
+  "2° TEN",
+  "1° TEN",
+  "CAP"
+] as const;
+
+export const QUADROS = [
+  "QOA",
+  "QOC",
+  "QOE/COM",
+  "QOE/MUS"
+] as const;
+
+export const UNIDADES = [
+  "1ª ODONTO",
+  "ACS",
+  "AJG",
+  "ARINST",
+  "ASSEJUR",
+  "ASSEMG",
+  "ASTI",
+  "BM/1",
+  "BM/3",
+  "CH. GAB. SEDEC",
+  "CHC",
+  "CONTROLADORIA",
+  "CORREGEDORIA GERAL",
+  "CRD",
+  "CRVD",
+  "DGAF",
+  "DGAL",
+  "DGEAO",
+  "DGF",
+  "DGP",
+  "DGPAT",
+  "DGST",
+  "DGVP",
+  "FUNESBOM",
+  "GBMus",
+  "GOCG",
+  "NUPROEISBM",
+  "SCP",
+  "SUAD",
+  "SUBSEDEC"
+] as const;
+
 export const MILITARES_INICIAIS: Militar[] = [
   { rg: "17211", grad: "1° TEN", quadro: "QOA", nome: "ALEXANDRE GOMES", unidade: "1ª ODONTO" },
   { rg: "27573", grad: "1° TEN", quadro: "QOE/COM", nome: "MARCILIANO", unidade: "BM/1" },

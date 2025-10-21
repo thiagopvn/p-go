@@ -1,13 +1,20 @@
-import React, {  createContext, useContext, useState, useCallback, useEffect  } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import type { Militar } from '../types';
+import type { Usuario, Militar } from '../types';
 
 interface AuthContextType {
-  currentUser: Militar | null;
+  currentUser: Usuario | null;
   role: 'admin' | 'user' | null;
   login: (rg: string, senha: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (militar: Militar) => Promise<{ success: boolean; error?: string }>;
+  register: (data: {
+    rg: string;
+    senha: string;
+    grad: string;
+    quadro: string;
+    nome: string;
+    unidade: string;
+  }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   loading: boolean;
 }
@@ -15,7 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<Militar | null>(null);
+  const [currentUser, setCurrentUser] = useState<Usuario | null>(null);
   const [role, setRole] = useState<'admin' | 'user' | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,32 +42,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
+  // Login function - now checks 'usuarios' collection
   const login = useCallback(async (rg: string, senha: string): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
-      // Get militar from Firestore by RG
-      const militarDoc = await getDoc(doc(db, 'militares', rg));
+      // Get user from 'usuarios' collection
+      const userDoc = await getDoc(doc(db, 'usuarios', rg));
 
-      if (!militarDoc.exists()) {
+      if (!userDoc.exists()) {
         setLoading(false);
-        return { success: false, error: 'RG não encontrado.' };
+        return {
+          success: false,
+          error: 'Usuário não cadastrado. Por favor, faça seu cadastro primeiro.'
+        };
       }
 
-      const militarData = militarDoc.data() as Militar;
+      const userData = userDoc.data() as Usuario;
 
       // Verify password
-      if (militarData.senha !== senha) {
+      if (userData.senha !== senha) {
         setLoading(false);
         return { success: false, error: 'Senha incorreta.' };
       }
 
       // Successful login
-      const userRole = militarData.role || 'user';
-      setCurrentUser(militarData);
-      setRole(userRole);
+      setCurrentUser(userData);
+      setRole(userData.role);
 
       // Persist session to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(militarData));
+      localStorage.setItem('currentUser', JSON.stringify(userData));
 
       setLoading(false);
       return { success: true };
@@ -71,30 +81,97 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const signup = useCallback(async (militar: Militar): Promise<{ success: boolean; error?: string }> => {
+  // Register function - validates against 'militares' and creates in 'usuarios'
+  const register = useCallback(async (data: {
+    rg: string;
+    senha: string;
+    grad: string;
+    quadro: string;
+    nome: string;
+    unidade: string;
+  }): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
-      // Check if RG already exists
-      const militarDoc = await getDoc(doc(db, 'militares', militar.rg));
-
-      if (militarDoc.exists()) {
+      // First, check if already registered in usuarios collection
+      const existingUserDoc = await getDoc(doc(db, 'usuarios', data.rg));
+      if (existingUserDoc.exists()) {
         setLoading(false);
-        return { success: false, error: 'RG já cadastrado.' };
+        return { success: false, error: 'Este RG já está cadastrado na plataforma.' };
       }
 
-      // Create new militar with default role 'user'
-      const newMilitar: Militar = {
-        ...militar,
-        role: 'user'
+      // Get militar data from 'militares' collection to validate
+      const militarDoc = await getDoc(doc(db, 'militares', data.rg));
+
+      if (!militarDoc.exists()) {
+        setLoading(false);
+        return {
+          success: false,
+          error: 'RG não consta no banco de dados. Entre em contato com o Ten Thiago Santos.'
+        };
+      }
+
+      const militarData = militarDoc.data() as Militar;
+
+      // Normalize strings for case-insensitive comparison
+      const normalize = (str: string) => str.trim().toLowerCase();
+
+      // Validate all fields against militares data
+      const validations = [
+        {
+          field: 'graduação',
+          provided: normalize(data.grad),
+          expected: normalize(militarData.grad)
+        },
+        {
+          field: 'quadro',
+          provided: normalize(data.quadro),
+          expected: normalize(militarData.quadro)
+        },
+        {
+          field: 'nome',
+          provided: normalize(data.nome),
+          expected: normalize(militarData.nome)
+        },
+        {
+          field: 'unidade',
+          provided: normalize(data.unidade),
+          expected: normalize(militarData.unidade)
+        }
+      ];
+
+      // Check for validation errors
+      const errors = validations.filter(v => v.provided !== v.expected);
+
+      if (errors.length > 0) {
+        setLoading(false);
+        const errorFields = errors.map(e => e.field).join(', ');
+        return {
+          success: false,
+          error: `Dados divergentes (${errorFields}). Verifique suas informações ou entre em contato com o Ten Thiago Santos.`
+        };
+      }
+
+      // All validations passed - create user in 'usuarios' collection
+      const newUser: Usuario = {
+        rg: data.rg,
+        senha: data.senha,
+        role: data.rg === '53717' ? 'admin' : 'user', // Ten Thiago Santos gets admin role
+        grad: militarData.grad, // Use validated data from militares
+        quadro: militarData.quadro,
+        nome: militarData.nome,
+        unidade: militarData.unidade,
+        createdAt: new Date()
       };
 
-      // Save to Firestore
-      await setDoc(doc(db, 'militares', militar.rg), newMilitar);
+      // Save to 'usuarios' collection
+      await setDoc(doc(db, 'usuarios', data.rg), newUser);
 
       setLoading(false);
-      return { success: true };
+      return {
+        success: true
+      };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Registration error:', error);
       setLoading(false);
       return { success: false, error: 'Erro ao cadastrar. Tente novamente.' };
     }
@@ -106,7 +183,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('currentUser');
   }, []);
 
-  const value = { currentUser, role, login, signup, logout, loading };
+  const value = {
+    currentUser,
+    role,
+    login,
+    register, // Changed from signup to register
+    logout,
+    loading
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
