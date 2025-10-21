@@ -6,7 +6,7 @@
  */
 
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from './firebase-migrate';
 import { MILITARES_INICIAIS } from './constants';
 import type { Militar } from './types';
 
