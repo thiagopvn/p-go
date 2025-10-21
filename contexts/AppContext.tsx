@@ -10,8 +10,9 @@ interface AppContextType {
   deleteMilitar: (rg: string) => Promise<void>;
   findMilitarByRg: (rg: string) => Militar | undefined;
   permutas: Permuta[];
-  addPermutas: (novasPermutas: Omit<Permuta, 'id' | 'status'>[]) => Promise<void>;
+  addPermutas: (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio'>[]) => Promise<void>;
   updatePermutaStatus: (id: string, status: Permuta['status']) => Promise<void>;
+  marcarPermutasComoEnviadas: (permutaIds: string[]) => Promise<void>;
   activeModal: string | null;
   openModal: (modal: string) => void;
   closeModal: () => void;
@@ -80,7 +81,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               funcao: data.funcao,
               militarEntra,
               militarSai,
-              status: data.status
+              status: data.status,
+              enviada: data.enviada || false,
+              dataEnvio: data.dataEnvio
             } as Permuta;
           }
           return null;
@@ -123,7 +126,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const addPermutas = async (novasPermutas: Omit<Permuta, 'id' | 'status'>[]) => {
+  const addPermutas = async (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio'>[]) => {
     try {
       const promises = novasPermutas.map(async (p) => {
         const permutaFirestore: Omit<PermutaFirestore, 'id'> = {
@@ -131,7 +134,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           funcao: p.funcao,
           militarEntraRg: p.militarEntra.rg,
           militarSaiRg: p.militarSai.rg,
-          status: 'Pendente'
+          status: 'Pendente',
+          enviada: false
         };
 
         const docRef = await addDoc(collection(db, 'permutas'), permutaFirestore);
@@ -155,6 +159,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const marcarPermutasComoEnviadas = async (permutaIds: string[]) => {
+    try {
+      const promises = permutaIds.map(async (id) => {
+        await updateDoc(doc(db, 'permutas', id), {
+          enviada: true,
+          dataEnvio: new Date().toISOString()
+        });
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Error marking permutas as sent:', error);
+      throw error;
+    }
+  };
+
   const openModal = (modal: string) => setActiveModal(modal);
   const closeModal = () => setActiveModal(null);
 
@@ -173,6 +192,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     permutas,
     addPermutas,
     updatePermutaStatus,
+    marcarPermutasComoEnviadas,
     activeModal,
     openModal,
     closeModal,

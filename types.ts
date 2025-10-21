@@ -30,6 +30,8 @@ export interface Permuta {
   militarEntra: Militar; // Full militar object for UI
   militarSai: Militar; // Full militar object for UI
   status: 'Pendente' | 'Aprovada' | 'Rejeitada';
+  enviada: boolean; // Whether document was generated and sent to ajudância
+  dataEnvio?: string; // When the document was sent (ISO string)
 }
 
 // Firestore document types (how data is stored in Firebase)
@@ -40,4 +42,6 @@ export interface PermutaFirestore {
   militarEntraRg: string; // Only RG reference
   militarSaiRg: string; // Only RG reference
   status: 'Pendente' | 'Aprovada' | 'Rejeitada';
+  enviada: boolean; // Whether document was generated and sent to ajudância
+  dataEnvio?: string; // When the document was sent (ISO string)
 }

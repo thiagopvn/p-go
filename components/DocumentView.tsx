@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Permuta, Funcao } from '../types';
+import { useAppContext } from '../contexts/AppContext';
 
 interface DocumentViewProps {
   permutas: Permuta[];
@@ -7,6 +8,10 @@ interface DocumentViewProps {
 }
 
 export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) => {
+  const { marcarPermutasComoEnviadas } = useAppContext();
+  const [marcandoEnviadas, setMarcandoEnviadas] = useState(false);
+  const [jaEnviadas, setJaEnviadas] = useState(false);
+
   const formatMilitarString = (militar: Permuta['militarEntra']) => {
     return `${militar.grad} ${militar.quadro} ${militar.nome}`;
   };
@@ -20,6 +25,21 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleMarcarComoEnviadas = async () => {
+    try {
+      setMarcandoEnviadas(true);
+      const permutaIds = permutas.map(p => p.id);
+      await marcarPermutasComoEnviadas(permutaIds);
+      setJaEnviadas(true);
+      alert(`${permutas.length} permuta(s) marcada(s) como enviada(s) para a ajudância!`);
+    } catch (error) {
+      console.error('Erro ao marcar permutas como enviadas:', error);
+      alert('Erro ao marcar permutas como enviadas. Tente novamente.');
+    } finally {
+      setMarcandoEnviadas(false);
+    }
   };
 
   const today = new Date();
@@ -144,13 +164,26 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
         )}
       </div>
 
-      <div className="max-w-4xl mx-auto mt-8 flex justify-end gap-4 print:hidden">
+      <div className="max-w-4xl mx-auto mt-8 flex justify-between items-center gap-4 print:hidden">
         <button onClick={onBack} className="bg-gray-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
             Voltar
         </button>
-        <button onClick={handlePrint} className="bg-brand-blue-dark text-white px-6 py-2 rounded-lg shadow-md hover:bg-brand-blue transition-colors">
-            Imprimir / Salvar PDF
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={handleMarcarComoEnviadas}
+            disabled={marcandoEnviadas || jaEnviadas}
+            className={`px-6 py-2 rounded-lg shadow-md transition-colors ${
+              jaEnviadas
+                ? 'bg-green-600 text-white cursor-not-allowed'
+                : 'bg-yellow-600 text-white hover:bg-yellow-700'
+            }`}
+          >
+            {jaEnviadas ? '✓ Marcadas como Enviadas' : marcandoEnviadas ? 'Marcando...' : 'Marcar como Enviadas'}
+          </button>
+          <button onClick={handlePrint} className="bg-brand-blue-dark text-white px-6 py-2 rounded-lg shadow-md hover:bg-brand-blue transition-colors">
+              Imprimir / Salvar PDF
+          </button>
+        </div>
       </div>
 
        <style>{`

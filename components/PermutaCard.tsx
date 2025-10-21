@@ -16,19 +16,33 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
   const { selectPermuta } = useAppContext();
 
   return (
-    <div 
+    <div
       onClick={() => selectPermuta(permuta)}
-      className="bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden border-t-4 border-brand-blue"
+      className={`bg-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden border-t-4 ${
+        permuta.enviada ? 'border-green-500' : 'border-brand-blue'
+      }`}
     >
       <div className="p-5">
         <div className="flex justify-between items-start mb-3">
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-bold text-brand-blue">{permuta.funcao}</p>
             <p className="text-lg font-bold text-brand-text">{new Date(permuta.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</p>
+            {permuta.enviada && permuta.dataEnvio && (
+              <p className="text-xs text-green-600 mt-1">
+                ✓ Enviada em {new Date(permuta.dataEnvio).toLocaleDateString('pt-BR')}
+              </p>
+            )}
           </div>
-          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${statusStyles[permuta.status]}`}>
-            {permuta.status}
-          </span>
+          <div className="flex flex-col gap-2 items-end">
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${statusStyles[permuta.status]}`}>
+              {permuta.status}
+            </span>
+            {permuta.enviada && (
+              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 border-green-400">
+                📤 Enviada
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="space-y-3 text-sm">
