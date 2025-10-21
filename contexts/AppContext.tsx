@@ -18,8 +18,8 @@ interface AppContextType {
   selectedPermuta: Permuta | null;
   selectPermuta: (permuta: Permuta) => void;
   clearSelectedPermuta: () => void;
-  documentData: Permuta | null;
-  setDocumentData: (permuta: Permuta | null) => void;
+  documentData: Permuta[] | null;
+  setDocumentData: (permutas: Permuta[] | null) => void;
   clearDocumentData: () => void;
   loading: boolean;
 }
@@ -31,7 +31,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [permutas, setPermutas] = useState<Permuta[]>([]);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [selectedPermuta, setSelectedPermuta] = useState<Permuta | null>(null);
-  const [documentData, setDocumentDataState] = useState<Permuta | null>(null);
+  const [documentData, setDocumentDataState] = useState<Permuta[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   const militarMap = useMemo(() => {

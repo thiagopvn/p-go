@@ -1,12 +1,12 @@
 import React from 'react';
-import type { Permuta } from '../types';
+import type { Permuta, Funcao } from '../types';
 
 interface DocumentViewProps {
-  permuta: Permuta;
+  permutas: Permuta[];
   onBack: () => void;
 }
 
-export const DocumentView: React.FC<DocumentViewProps> = ({ permuta, onBack }) => {
+export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) => {
   const formatMilitarString = (militar: Permuta['militarEntra']) => {
     return `${militar.grad} ${militar.quadro} ${militar.nome}`;
   };
@@ -21,43 +21,72 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permuta, onBack }) =
   const handlePrint = () => {
     window.print();
   };
-  
+
   const today = new Date();
   const noteNumber = `149/${today.getFullYear()}`; // Example note number
+
+  // Group permutas by funcao
+  const permutasByFuncao = permutas.reduce((acc, permuta) => {
+    if (!acc[permuta.funcao]) {
+      acc[permuta.funcao] = [];
+    }
+    acc[permuta.funcao].push(permuta);
+    return acc;
+  }, {} as Record<Funcao, Permuta[]>);
+
+  // Sort permutas within each function by date
+  Object.keys(permutasByFuncao).forEach(funcao => {
+    permutasByFuncao[funcao as Funcao].sort((a, b) =>
+      new Date(a.data).getTime() - new Date(b.data).getTime()
+    );
+  });
+
+  // Define order of functions
+  const funcaoOrder: Funcao[] = ["1º SOCORRO", "2º SOCORRO", "BUSCA E SALVAMENTO"];
+  const orderedFuncoes = funcaoOrder.filter(funcao => permutasByFuncao[funcao]);
 
   return (
     <div className="bg-gray-200 min-h-screen p-8 print:p-0 print:bg-white">
       <div className="max-w-4xl mx-auto bg-white p-12 shadow-lg print:shadow-none" id="document-to-print">
         <div className="text-center font-serif text-black space-y-4 mb-10">
           <p className="text-lg font-bold">ESCALA DE SERVIÇO – COMANDANTE DE SOCORRO – ALTERAÇÃO – ANEXO XX – NOTA GOCG {noteNumber}</p>
-          <p className="text-lg font-bold uppercase">{permuta.funcao}</p>
         </div>
 
-        <table className="w-full border-collapse border border-black text-black">
-          <thead>
-            <tr className="bg-gray-300">
-              <th className="border border-black p-2 w-1/5 font-bold">DIA</th>
-              <th colSpan={2} className="border border-black p-2 font-bold">ENTRA</th>
-              <th colSpan={2} className="border border-black p-2 font-bold">SAI</th>
-            </tr>
-            <tr className="bg-gray-300">
-              <th className="border border-black p-2"></th>
-              <th className="border border-black p-2 font-bold">MILITAR</th>
-              <th className="border border-black p-2 font-bold w-1/6">RG</th>
-              <th className="border border-black p-2 font-bold">MILITAR</th>
-              <th className="border border-black p-2 font-bold w-1/6">RG</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-black p-2 text-center">{new Date(permuta.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
-              <td className="border border-black p-2 text-center">{formatMilitarString(permuta.militarEntra)}</td>
-              <td className="border border-black p-2 text-center">{formatRg(permuta.militarEntra.rg)}</td>
-              <td className="border border-black p-2 text-center">{formatMilitarString(permuta.militarSai)}</td>
-              <td className="border border-black p-2 text-center">{formatRg(permuta.militarSai.rg)}</td>
-            </tr>
-          </tbody>
-        </table>
+        {orderedFuncoes.map((funcao, index) => (
+          <div key={funcao} className={index > 0 ? 'mt-12' : ''}>
+            <div className="text-center font-serif text-black mb-4">
+              <p className="text-lg font-bold uppercase">{funcao}</p>
+            </div>
+
+            <table className="w-full border-collapse border border-black text-black">
+              <thead>
+                <tr className="bg-gray-300">
+                  <th className="border border-black p-2 w-1/5 font-bold">DIA</th>
+                  <th colSpan={2} className="border border-black p-2 font-bold">ENTRA</th>
+                  <th colSpan={2} className="border border-black p-2 font-bold">SAI</th>
+                </tr>
+                <tr className="bg-gray-300">
+                  <th className="border border-black p-2"></th>
+                  <th className="border border-black p-2 font-bold">MILITAR</th>
+                  <th className="border border-black p-2 font-bold w-1/6">RG</th>
+                  <th className="border border-black p-2 font-bold">MILITAR</th>
+                  <th className="border border-black p-2 font-bold w-1/6">RG</th>
+                </tr>
+              </thead>
+              <tbody>
+                {permutasByFuncao[funcao].map((permuta) => (
+                  <tr key={permuta.id}>
+                    <td className="border border-black p-2 text-center">{new Date(permuta.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
+                    <td className="border border-black p-2 text-center">{formatMilitarString(permuta.militarEntra)}</td>
+                    <td className="border border-black p-2 text-center">{formatRg(permuta.militarEntra.rg)}</td>
+                    <td className="border border-black p-2 text-center">{formatMilitarString(permuta.militarSai)}</td>
+                    <td className="border border-black p-2 text-center">{formatRg(permuta.militarSai.rg)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
       </div>
 
       <div className="max-w-4xl mx-auto mt-8 flex justify-end gap-4 print:hidden">

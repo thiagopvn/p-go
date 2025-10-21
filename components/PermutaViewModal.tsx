@@ -29,7 +29,7 @@ export const PermutaViewModal: React.FC<PermutaViewModalProps> = ({ permuta, onC
     const { role } = useAuth();
 
     const handleGenerateDocument = () => {
-        setDocumentData(permuta);
+        setDocumentData([permuta]);
         onClose();
     };
 

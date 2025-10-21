@@ -39,7 +39,7 @@ const App: React.FC = () => {
   }
 
   if (documentData) {
-    return <DocumentView permuta={documentData} onBack={clearDocumentData} />;
+    return <DocumentView permutas={documentData} onBack={clearDocumentData} />;
   }
 
   return (
