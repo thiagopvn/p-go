@@ -83,11 +83,15 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
   const { currentUser, role } = useAuth();
 
   const createNewRow = (): PermutaFormData => {
-    const newRow: PermutaFormData = { id: Date.now(), data: '', funcao: FUNCOES[0], militarEntra: null, militarEntraRg: '', militarSai: null, militarSaiRg: '' };
-    if (role === 'user' && currentUser) {
-      newRow.militarSai = currentUser;
-      newRow.militarSaiRg = currentUser.rg;
-    }
+    const newRow: PermutaFormData = {
+      id: Date.now(),
+      data: '',
+      funcao: FUNCOES[0],
+      militarEntra: null,
+      militarEntraRg: '',
+      militarSai: null,
+      militarSaiRg: ''
+    };
     return newRow;
   };
   
@@ -164,13 +168,12 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
                     militar={row.militarEntra}
                     onMilitarChange={(value: Militar | null) => handleUpdateRow(row.id, 'militarEntra', value)}
                 />
-                <MilitarInputGroup 
+                <MilitarInputGroup
                     title="Militar que SAI do serviço"
                     rg={row.militarSaiRg}
                     onRgChange={(value: string) => handleUpdateRow(row.id, 'militarSaiRg', value)}
                     militar={row.militarSai}
                     onMilitarChange={(value: Militar | null) => handleUpdateRow(row.id, 'militarSai', value)}
-                    isRgReadOnly={role === 'user'}
                 />
             </div>
           </div>
