@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import React, {  createContext, useContext, useState, useMemo, useCallback, useEffect  } from 'react';
 import { collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Militar, Permuta, PermutaFirestore } from '../types';

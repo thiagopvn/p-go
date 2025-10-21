@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Modal } from './Modal';
 import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -91,8 +91,8 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
     return newRow;
   };
   
-  const [formRows, setFormRows] = useState<PermutaFormData[]>([createNewRow()]);
-  const [error, setError] = useState<string | null>(null);
+  const [formRows, setFormRows] = React.useState<PermutaFormData[]>([createNewRow()]);
+  const [error, setError] = React.useState<string | null>(null);
 
   const handleUpdateRow = (id: number, field: keyof PermutaFormData, value: any) => {
     setFormRows(rows => rows.map(row => (row.id === id ? { ...row, [field]: value } : row)));
@@ -160,16 +160,16 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
                 <MilitarInputGroup 
                     title="Militar que ENTRA no serviço"
                     rg={row.militarEntraRg}
-                    onRgChange={(value) => handleUpdateRow(row.id, 'militarEntraRg', value)}
+                    onRgChange={(value: string) => handleUpdateRow(row.id, 'militarEntraRg', value)}
                     militar={row.militarEntra}
-                    onMilitarChange={(value) => handleUpdateRow(row.id, 'militarEntra', value)}
+                    onMilitarChange={(value: Militar | null) => handleUpdateRow(row.id, 'militarEntra', value)}
                 />
                 <MilitarInputGroup 
                     title="Militar que SAI do serviço"
                     rg={row.militarSaiRg}
-                    onRgChange={(value) => handleUpdateRow(row.id, 'militarSaiRg', value)}
+                    onRgChange={(value: string) => handleUpdateRow(row.id, 'militarSaiRg', value)}
                     militar={row.militarSai}
-                    onMilitarChange={(value) => handleUpdateRow(row.id, 'militarSai', value)}
+                    onMilitarChange={(value: Militar | null) => handleUpdateRow(row.id, 'militarSai', value)}
                     isRgReadOnly={role === 'user'}
                 />
             </div>
