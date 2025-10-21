@@ -25,6 +25,22 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
   const today = new Date();
   const noteNumber = `149/${today.getFullYear()}`; // Example note number
 
+  // Check if permutas is valid and not empty
+  if (!permutas || permutas.length === 0) {
+    return (
+      <div className="bg-gray-200 min-h-screen p-8">
+        <div className="max-w-4xl mx-auto bg-white p-12 shadow-lg">
+          <p className="text-center text-gray-600">Nenhuma permuta selecionada para gerar documento.</p>
+          <div className="mt-8 flex justify-center">
+            <button onClick={onBack} className="bg-gray-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-gray-600 transition-colors">
+              Voltar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Group permutas by funcao
   const permutasByFuncao = permutas.reduce((acc, permuta) => {
     if (!acc[permuta.funcao]) {

@@ -38,7 +38,7 @@ const App: React.FC = () => {
     return <LoginScreen />;
   }
 
-  if (documentData) {
+  if (documentData && documentData.length > 0) {
     return <DocumentView permutas={documentData} onBack={clearDocumentData} />;
   }
 
