@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import type { Permuta, Funcao } from '../types';
 import { useAppContext } from '../contexts/AppContext';
 import { saveAs } from 'file-saver';
-// @ts-ignore
-import htmlDocx from 'html-docx-js/dist/html-docx';
+import { Document, Packer, Table, TableCell, TableRow, Paragraph, TextRun, WidthType, AlignmentType, BorderStyle, VerticalAlign } from 'docx';
 
 interface DocumentViewProps {
   permutas: Permuta[];
@@ -30,82 +29,238 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
     window.print();
   };
 
-  const handleExportWord = () => {
-    // Criar HTML completo com estilos para Word
-    const documentHtml = document.getElementById('document-to-print');
-    if (!documentHtml) return;
+  const handleExportWord = async () => {
+    const today = new Date();
+    const noteNumber = `149/${today.getFullYear()}`;
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            @page {
-              size: A4;
-              margin-left: 3mm;
-              margin-right: 3mm;
-              margin-top: 25.4mm;
-              margin-bottom: 25.4mm;
-            }
-            body {
-              font-family: Arial, sans-serif;
-              font-size: 12pt;
-              color: #000000;
-              margin: 0;
-              padding: 0;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 0 auto;
-            }
-            th, td {
-              border: 1px solid black;
-              padding: 8px;
-              text-align: center;
-              font-family: Arial, sans-serif;
-              font-size: 12pt;
-            }
-            th {
-              background-color: #d3d3d3;
-              font-weight: bold;
-            }
-            .text-center {
-              text-align: center;
-            }
-            .font-bold {
-              font-weight: bold;
-            }
-            .uppercase {
-              text-transform: uppercase;
-            }
-            .mb-4 {
-              margin-bottom: 16px;
-            }
-            .mt-12 {
-              margin-top: 48px;
-            }
-            .mb-10 {
-              margin-bottom: 40px;
-            }
-            .space-y-4 > * + * {
-              margin-top: 16px;
-            }
-          </style>
-        </head>
-        <body>
-          ${documentHtml.innerHTML}
-        </body>
-      </html>
-    `;
+    // Agrupar permutas por função
+    const permutasByFuncao = permutas.reduce((acc, permuta) => {
+      const funcao = permuta.funcao || "1º SOCORRO";
+      if (!acc[funcao]) {
+        acc[funcao] = [];
+      }
+      acc[funcao].push(permuta);
+      return acc;
+    }, {} as Record<string, Permuta[]>);
 
-    // Converter HTML para DOCX
-    const converted = htmlDocx.asBlob(htmlContent);
+    // Ordenar permutas dentro de cada função por data
+    Object.keys(permutasByFuncao).forEach(funcao => {
+      permutasByFuncao[funcao].sort((a, b) =>
+        new Date(a.data).getTime() - new Date(b.data).getTime()
+      );
+    });
 
-    // Salvar arquivo
+    const funcaoOrder: Funcao[] = ["1º SOCORRO", "2º SOCORRO", "BUSCA E SALVAMENTO"];
+    const orderedFuncoes = Object.keys(permutasByFuncao).sort((a, b) => {
+      const indexA = funcaoOrder.indexOf(a as Funcao);
+      const indexB = funcaoOrder.indexOf(b as Funcao);
+      if (indexA === -1 && indexB === -1) return 0;
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+
+    const docChildren: Array<Paragraph | Table> = [];
+
+    // Título
+    docChildren.push(
+      new Paragraph({
+        text: `ESCALA DE SERVIÇO – COMANDANTE DE SOCORRO – ALTERAÇÃO – ANEXO XX – NOTA GOCG ${noteNumber}`,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 },
+        style: 'heading1',
+      })
+    );
+
+    // Criar tabelas para cada função
+    orderedFuncoes.forEach((funcao, index) => {
+      if (index > 0) {
+        docChildren.push(
+          new Paragraph({
+            text: '',
+            spacing: { before: 600 },
+          })
+        );
+      }
+
+      // Subtítulo da função
+      docChildren.push(
+        new Paragraph({
+          text: funcao.toUpperCase(),
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 200 },
+          bold: true,
+        })
+      );
+
+      const tableRows: TableRow[] = [];
+
+      // Header row 1
+      tableRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ text: 'ENTRA', alignment: AlignmentType.CENTER, bold: true })],
+              columnSpan: 3,
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'SAI', alignment: AlignmentType.CENTER, bold: true })],
+              columnSpan: 2,
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+          ],
+        })
+      );
+
+      // Header row 2
+      tableRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ text: 'DIA', alignment: AlignmentType.CENTER, bold: true })],
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'MILITAR', alignment: AlignmentType.CENTER, bold: true })],
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'RG', alignment: AlignmentType.CENTER, bold: true })],
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'MILITAR', alignment: AlignmentType.CENTER, bold: true })],
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'RG', alignment: AlignmentType.CENTER, bold: true })],
+              shading: { fill: 'd3d3d3' },
+              verticalAlign: VerticalAlign.CENTER,
+            }),
+          ],
+        })
+      );
+
+      // Data rows
+      permutasByFuncao[funcao].forEach((permuta) => {
+        tableRows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: new Date(permuta.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' }),
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+                verticalAlign: VerticalAlign.CENTER,
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: formatMilitarString(permuta.militarEntra),
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+                verticalAlign: VerticalAlign.CENTER,
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: formatRg(permuta.militarEntra.rg),
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+                verticalAlign: VerticalAlign.CENTER,
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: formatMilitarString(permuta.militarSai),
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+                verticalAlign: VerticalAlign.CENTER,
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    text: formatRg(permuta.militarSai.rg),
+                    alignment: AlignmentType.CENTER,
+                  }),
+                ],
+                verticalAlign: VerticalAlign.CENTER,
+              }),
+            ],
+          })
+        );
+      });
+
+      docChildren.push(
+        new Table({
+          rows: tableRows,
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE,
+          },
+        })
+      );
+    });
+
+    const doc = new Document({
+      sections: [
+        {
+          properties: {
+            page: {
+              margin: {
+                top: 720,
+                right: 85,
+                bottom: 720,
+                left: 85,
+              },
+            },
+          },
+          children: docChildren,
+        },
+      ],
+      styles: {
+        paragraphStyles: [
+          {
+            id: 'heading1',
+            name: 'Heading 1',
+            basedOn: 'Normal',
+            next: 'Normal',
+            run: {
+              font: 'Arial',
+              size: 24,
+              bold: true,
+            },
+            paragraph: {
+              alignment: AlignmentType.CENTER,
+            },
+          },
+        ],
+        default: {
+          document: {
+            run: {
+              font: 'Arial',
+              size: 24,
+            },
+          },
+        },
+      },
+    });
+
+    const blob = await Packer.toBlob(doc);
     const fileName = `Escala_Permutas_${new Date().toISOString().split('T')[0]}.docx`;
-    saveAs(converted, fileName);
+    saveAs(blob, fileName);
   };
 
   const handleMarcarComoEnviadas = async () => {
