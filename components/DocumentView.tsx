@@ -13,7 +13,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
   const [jaEnviadas, setJaEnviadas] = useState(false);
 
   const formatMilitarString = (militar: Permuta['militarEntra']) => {
-    return `${militar.grad} ${militar.quadro} ${militar.nome}`;
+    return `${militar.grad} BM ${militar.quadro} ${militar.nome}`;
   };
 
   const formatRg = (rg: string) => {
