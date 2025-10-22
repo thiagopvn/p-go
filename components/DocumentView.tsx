@@ -123,12 +123,11 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
               <table className="w-full border-collapse border border-black text-black">
                 <thead>
                   <tr className="bg-gray-300">
-                    <th className="border border-black p-2 w-1/5 font-bold">DIA</th>
-                    <th colSpan={2} className="border border-black p-2 font-bold">ENTRA</th>
+                    <th colSpan={3} className="border border-black p-2 font-bold">ENTRA</th>
                     <th colSpan={2} className="border border-black p-2 font-bold">SAI</th>
                   </tr>
                   <tr className="bg-gray-300">
-                    <th className="border border-black p-2"></th>
+                    <th className="border border-black p-2 font-bold">DIA</th>
                     <th className="border border-black p-2 font-bold">MILITAR</th>
                     <th className="border border-black p-2 font-bold w-1/6">RG</th>
                     <th className="border border-black p-2 font-bold">MILITAR</th>
