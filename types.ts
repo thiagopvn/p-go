@@ -32,6 +32,8 @@ export interface Permuta {
   status: 'Pendente' | 'Aprovada' | 'Rejeitada';
   enviada: boolean; // Whether document was generated and sent to ajudância
   dataEnvio?: string; // When the document was sent (ISO string)
+  arquivada: boolean; // Whether permuta is archived
+  dataArquivamento?: string; // When the permuta was archived (ISO string)
 }
 
 // Firestore document types (how data is stored in Firebase)
@@ -44,4 +46,6 @@ export interface PermutaFirestore {
   status: 'Pendente' | 'Aprovada' | 'Rejeitada';
   enviada: boolean; // Whether document was generated and sent to ajudância
   dataEnvio?: string; // When the document was sent (ISO string)
+  arquivada: boolean; // Whether permuta is archived
+  dataArquivamento?: string; // When the permuta was archived (ISO string)
 }

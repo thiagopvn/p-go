@@ -10,9 +10,11 @@ interface AppContextType {
   deleteMilitar: (rg: string) => Promise<void>;
   findMilitarByRg: (rg: string) => Militar | undefined;
   permutas: Permuta[];
-  addPermutas: (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio'>[]) => Promise<void>;
+  addPermutas: (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio' | 'arquivada' | 'dataArquivamento'>[]) => Promise<void>;
   updatePermutaStatus: (id: string, status: Permuta['status']) => Promise<void>;
   marcarPermutasComoEnviadas: (permutaIds: string[]) => Promise<void>;
+  arquivarPermutas: (permutaIds: string[]) => Promise<void>;
+  desarquivarPermutas: (permutaIds: string[]) => Promise<void>;
   activeModal: string | null;
   openModal: (modal: string) => void;
   closeModal: () => void;
@@ -83,7 +85,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               militarSai,
               status: data.status,
               enviada: data.enviada || false,
-              dataEnvio: data.dataEnvio
+              dataEnvio: data.dataEnvio,
+              arquivada: data.arquivada || false,
+              dataArquivamento: data.dataArquivamento
             } as Permuta;
           }
           return null;
@@ -126,7 +130,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const addPermutas = async (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio'>[]) => {
+  const addPermutas = async (novasPermutas: Omit<Permuta, 'id' | 'status' | 'enviada' | 'dataEnvio' | 'arquivada' | 'dataArquivamento'>[]) => {
     try {
       const promises = novasPermutas.map(async (p) => {
         const permutaFirestore: Omit<PermutaFirestore, 'id'> = {
@@ -135,7 +139,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           militarEntraRg: p.militarEntra.rg,
           militarSaiRg: p.militarSai.rg,
           status: 'Pendente',
-          enviada: false
+          enviada: false,
+          arquivada: false
         };
 
         const docRef = await addDoc(collection(db, 'permutas'), permutaFirestore);
@@ -174,6 +179,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const arquivarPermutas = async (permutaIds: string[]) => {
+    try {
+      const promises = permutaIds.map(async (id) => {
+        await updateDoc(doc(db, 'permutas', id), {
+          arquivada: true,
+          dataArquivamento: new Date().toISOString()
+        });
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Error archiving permutas:', error);
+      throw error;
+    }
+  };
+
+  const desarquivarPermutas = async (permutaIds: string[]) => {
+    try {
+      const promises = permutaIds.map(async (id) => {
+        await updateDoc(doc(db, 'permutas', id), {
+          arquivada: false,
+          dataArquivamento: undefined
+        });
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Error unarchiving permutas:', error);
+      throw error;
+    }
+  };
+
   const openModal = (modal: string) => setActiveModal(modal);
   const closeModal = () => setActiveModal(null);
 
@@ -193,6 +228,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addPermutas,
     updatePermutaStatus,
     marcarPermutasComoEnviadas,
+    arquivarPermutas,
+    desarquivarPermutas,
     activeModal,
     openModal,
     closeModal,
