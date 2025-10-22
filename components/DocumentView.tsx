@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Permuta, Funcao } from '../types';
 import { useAppContext } from '../contexts/AppContext';
 import { saveAs } from 'file-saver';
+// @ts-ignore
 import htmlDocx from 'html-docx-js/dist/html-docx';
 
 interface DocumentViewProps {
