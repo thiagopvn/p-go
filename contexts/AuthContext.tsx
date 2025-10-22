@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
         return {
           success: false,
-          error: 'RG não consta no banco de dados. Entre em contato com o Ten Thiago Santos.'
+          error: 'Erro no cadastro. RG não encontrado na base de dados. Entre em contato com o TEN Thiago Santos, desenvolvedor do aplicativo, pelo número 21 967586628.'
         };
       }
 
@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const errorFields = errors.map(e => e.field).join(', ');
         return {
           success: false,
-          error: `Dados divergentes (${errorFields}). Verifique suas informações ou entre em contato com o Ten Thiago Santos.`
+          error: `Erro no cadastro. Dados divergentes: ${errorFields}. Entre em contato com o TEN Thiago Santos, desenvolvedor do aplicativo, pelo número 21 967586628.`
         };
       }
 

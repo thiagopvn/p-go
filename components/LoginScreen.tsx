@@ -86,8 +86,8 @@ export const LoginScreen: React.FC = () => {
         setLoginRg(cadastroData.rg);
       }, 2000);
     } else {
-      // Check if error message mentions contacting Ten Thiago Santos
-      if (result.error?.includes('Ten Thiago Santos')) {
+      // Check if error message mentions contacting TEN Thiago Santos (with any case)
+      if (result.error?.toLowerCase().includes('thiago santos') || result.error?.toLowerCase().includes('erro no cadastro')) {
         setShowErrorModal(true);
       }
       setError(result.error || 'Erro ao cadastrar.');
@@ -355,37 +355,48 @@ export const LoginScreen: React.FC = () => {
 
       {/* Error Modal for data mismatch */}
       {showErrorModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-              </div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-2">
-                Dados Divergentes
-              </h3>
-              <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-600">
-                  As informações fornecidas não correspondem aos dados cadastrados no sistema.
-                </p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Por favor, verifique seus dados ou entre em contato com:
-                </p>
-                <p className="text-sm font-semibold text-brand-blue-dark mt-2">
-                  Ten Thiago Santos
-                </p>
-                <p className="text-sm text-gray-500">
-                  Desenvolvedor da Plataforma
-                </p>
-              </div>
-              <div className="items-center px-4 py-3">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative mx-auto border-0 w-full max-w-lg shadow-2xl rounded-2xl bg-white animate-fadeIn">
+            <div className="p-8">
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                  <svg className="h-8 w-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Erro no Cadastro
+                </h3>
+                <div className="space-y-4 mb-6">
+                  <p className="text-gray-700 leading-relaxed">
+                    {error}
+                  </p>
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mt-4">
+                    <p className="text-sm font-semibold text-brand-blue-dark mb-2">
+                      Entre em contato com:
+                    </p>
+                    <p className="text-lg font-bold text-brand-blue-dark">
+                      TEN Thiago Santos
+                    </p>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Desenvolvedor do Aplicativo
+                    </p>
+                    <a
+                      href="tel:+5521967586628"
+                      className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-sm"
+                    >
+                      <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      (21) 96758-6628
+                    </a>
+                  </div>
+                </div>
                 <button
                   onClick={() => setShowErrorModal(false)}
-                  className="px-4 py-2 bg-brand-blue text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-brand-blue-dark focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                  className="w-full px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-all duration-200 shadow-sm"
                 >
-                  Entendi
+                  Fechar
                 </button>
               </div>
             </div>
