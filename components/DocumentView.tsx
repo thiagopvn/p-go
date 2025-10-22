@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import type { Permuta, Funcao } from '../types';
 import { useAppContext } from '../contexts/AppContext';
+import { saveAs } from 'file-saver';
+import htmlDocx from 'html-docx-js/dist/html-docx';
 
 interface DocumentViewProps {
   permutas: Permuta[];
@@ -25,6 +27,84 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleExportWord = () => {
+    // Criar HTML completo com estilos para Word
+    const documentHtml = document.getElementById('document-to-print');
+    if (!documentHtml) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            @page {
+              size: A4;
+              margin-left: 3mm;
+              margin-right: 3mm;
+              margin-top: 25.4mm;
+              margin-bottom: 25.4mm;
+            }
+            body {
+              font-family: Arial, sans-serif;
+              font-size: 12pt;
+              color: #000000;
+              margin: 0;
+              padding: 0;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 0 auto;
+            }
+            th, td {
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+              font-family: Arial, sans-serif;
+              font-size: 12pt;
+            }
+            th {
+              background-color: #d3d3d3;
+              font-weight: bold;
+            }
+            .text-center {
+              text-align: center;
+            }
+            .font-bold {
+              font-weight: bold;
+            }
+            .uppercase {
+              text-transform: uppercase;
+            }
+            .mb-4 {
+              margin-bottom: 16px;
+            }
+            .mt-12 {
+              margin-top: 48px;
+            }
+            .mb-10 {
+              margin-bottom: 40px;
+            }
+            .space-y-4 > * + * {
+              margin-top: 16px;
+            }
+          </style>
+        </head>
+        <body>
+          ${documentHtml.innerHTML}
+        </body>
+      </html>
+    `;
+
+    // Converter HTML para DOCX
+    const converted = htmlDocx.asBlob(htmlContent);
+
+    // Salvar arquivo
+    const fileName = `Escala_Permutas_${new Date().toISOString().split('T')[0]}.docx`;
+    saveAs(converted, fileName);
   };
 
   const handleMarcarComoEnviadas = async () => {
@@ -178,6 +258,9 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
             }`}
           >
             {jaEnviadas ? '✓ Marcadas como Enviadas' : marcandoEnviadas ? 'Marcando...' : 'Marcar como Enviadas'}
+          </button>
+          <button onClick={handleExportWord} className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+              Exportar Word
           </button>
           <button onClick={handlePrint} className="bg-brand-blue-dark text-white px-6 py-2 rounded-lg shadow-md hover:bg-brand-blue transition-colors">
               Imprimir / Salvar PDF
