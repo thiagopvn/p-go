@@ -220,10 +220,10 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
           properties: {
             page: {
               margin: {
-                top: 720,
-                right: 85,
-                bottom: 720,
-                left: 85,
+                top: 720,      // 1.27 cm (0.5 polegadas)
+                right: 1440,   // 2.54 cm (1 polegada) - AUMENTADO
+                bottom: 720,   // 1.27 cm (0.5 polegadas)
+                left: 1440,    // 2.54 cm (1 polegada) - AUMENTADO
               },
             },
           },

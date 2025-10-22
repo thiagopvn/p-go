@@ -92,23 +92,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);
     try {
+      console.log('🔍 [CADASTRO] Iniciando validação para RG:', data.rg);
+
       // First, check if already registered in usuarios collection
       const existingUserDoc = await getDoc(doc(db, 'usuarios', data.rg));
       if (existingUserDoc.exists()) {
+        console.log('❌ [CADASTRO] RG já cadastrado na plataforma');
         setLoading(false);
         return { success: false, error: 'Este RG já está cadastrado na plataforma.' };
       }
 
       // Get militar data from 'militares' collection to validate
+      console.log('🔍 [CADASTRO] Verificando RG na coleção militares...');
       const militarDoc = await getDoc(doc(db, 'militares', data.rg));
+      console.log('🔍 [CADASTRO] Resultado da busca:', militarDoc.exists() ? 'EXISTE' : 'NÃO EXISTE');
 
       if (!militarDoc.exists()) {
+        console.log('❌ [CADASTRO] RG não encontrado na base de militares');
         setLoading(false);
         return {
           success: false,
           error: 'Erro no cadastro. RG não encontrado na base de dados. Entre em contato com o TEN Thiago Santos, desenvolvedor do aplicativo, pelo número 21 967586628.'
         };
       }
+
+      console.log('✅ [CADASTRO] RG encontrado, validando dados...');
 
       const militarData = militarDoc.data() as Militar;
 
@@ -143,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const errors = validations.filter(v => v.provided !== v.expected);
 
       if (errors.length > 0) {
+        console.log('❌ [CADASTRO] Dados divergentes:', errors);
         setLoading(false);
         const errorFields = errors.map(e => e.field).join(', ');
         return {
@@ -150,6 +159,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           error: `Erro no cadastro. Dados divergentes: ${errorFields}. Entre em contato com o TEN Thiago Santos, desenvolvedor do aplicativo, pelo número 21 967586628.`
         };
       }
+
+      console.log('✅ [CADASTRO] Todos os dados validados! Criando usuário...');
 
       // All validations passed - create user in 'usuarios' collection
       const newUser: Usuario = {
@@ -166,12 +177,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Save to 'usuarios' collection
       await setDoc(doc(db, 'usuarios', data.rg), newUser);
 
+      console.log('✅ [CADASTRO] Usuário criado com sucesso!');
       setLoading(false);
       return {
         success: true
       };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('❌ [CADASTRO] Erro durante cadastro:', error);
       setLoading(false);
       return { success: false, error: 'Erro ao cadastrar. Tente novamente.' };
     }
