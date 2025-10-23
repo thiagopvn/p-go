@@ -34,6 +34,10 @@ export interface Permuta {
   dataEnvio?: string; // When the document was sent (ISO string)
   arquivada: boolean; // Whether permuta is archived
   dataArquivamento?: string; // When the permuta was archived (ISO string)
+  confirmadaPorMilitarEntra: boolean; // Electronic signature by militarEntra
+  confirmadaPorMilitarSai: boolean; // Electronic signature by militarSai
+  dataConfirmacaoMilitarEntra?: string; // When militarEntra confirmed (ISO string)
+  dataConfirmacaoMilitarSai?: string; // When militarSai confirmed (ISO string)
 }
 
 // Firestore document types (how data is stored in Firebase)
@@ -48,4 +52,8 @@ export interface PermutaFirestore {
   dataEnvio?: string; // When the document was sent (ISO string)
   arquivada: boolean; // Whether permuta is archived
   dataArquivamento?: string; // When the permuta was archived (ISO string)
+  confirmadaPorMilitarEntra: boolean; // Electronic signature by militarEntra
+  confirmadaPorMilitarSai: boolean; // Electronic signature by militarSai
+  dataConfirmacaoMilitarEntra?: string; // When militarEntra confirmed (ISO string)
+  dataConfirmacaoMilitarSai?: string; // When militarSai confirmed (ISO string)
 }

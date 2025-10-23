@@ -46,17 +46,65 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
         </div>
 
         <div className="space-y-3 text-sm">
-          <div className="p-3 bg-red-50 rounded-md">
-            <p className="font-bold text-red-600">SAI:</p>
-            <p className="text-gray-800 truncate">{permuta.militarSai.grad} {permuta.militarSai.nome}</p>
-            <p className="text-gray-500">RG: {permuta.militarSai.rg}</p>
+          <div className="p-3 bg-red-50 rounded-md relative">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <p className="font-bold text-red-600">SAI:</p>
+                <p className="text-gray-800 truncate">{permuta.militarSai.grad} {permuta.militarSai.nome}</p>
+                <p className="text-gray-500 text-xs">RG: {permuta.militarSai.rg}</p>
+              </div>
+              {permuta.confirmadaPorMilitarSai ? (
+                <span className="inline-flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm" title="Confirmada por assinatura eletrônica">
+                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  ✓
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full" title="Aguardando confirmação">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+              )}
+            </div>
           </div>
-          <div className="p-3 bg-green-50 rounded-md">
-            <p className="font-bold text-green-600">ENTRA:</p>
-            <p className="text-gray-800 truncate">{permuta.militarEntra.grad} {permuta.militarEntra.nome}</p>
-            <p className="text-gray-500">RG: {permuta.militarEntra.rg}</p>
+          <div className="p-3 bg-green-50 rounded-md relative">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <p className="font-bold text-green-600">ENTRA:</p>
+                <p className="text-gray-800 truncate">{permuta.militarEntra.grad} {permuta.militarEntra.nome}</p>
+                <p className="text-gray-500 text-xs">RG: {permuta.militarEntra.rg}</p>
+              </div>
+              {permuta.confirmadaPorMilitarEntra ? (
+                <span className="inline-flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm" title="Confirmada por assinatura eletrônica">
+                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  ✓
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 bg-gray-400 text-white text-xs font-bold px-2 py-1 rounded-full" title="Aguardando confirmação">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Badge de confirmação completa */}
+        {permuta.confirmadaPorMilitarEntra && permuta.confirmadaPorMilitarSai && (
+          <div className="mt-3 bg-gradient-to-r from-green-500 to-green-600 text-white text-center py-2 rounded-lg shadow-sm">
+            <p className="text-xs font-bold flex items-center justify-center gap-2">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              ASSINADA POR AMBOS OS MILITARES
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

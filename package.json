@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "migrate": "tsx migrate-data.ts",
-    "migrate:arquivada": "tsx migrate-arquivada.ts"
+    "migrate:arquivada": "tsx migrate-arquivada.ts",
+    "migrate:confirmacao": "tsx migrate-confirmacao.ts"
   },
   "dependencies": {
     "docx": "^9.5.1",
