@@ -65,6 +65,8 @@ export const ConfirmarPermutaModal: React.FC<ConfirmarPermutaModalProps> = ({ pe
   const handleSendEmail = async (email: string) => {
     setSendingEmail(true);
     try {
+      console.log('📧 [FRONTEND] Iniciando envio de email para:', email);
+
       const result = await sendPermutaEmail({
         email,
         permuta: {
@@ -90,18 +92,23 @@ export const ConfirmarPermutaModal: React.FC<ConfirmarPermutaModalProps> = ({ pe
         },
       });
 
+      console.log('📧 [FRONTEND] Resultado da função:', result);
+
       if (result.data.success) {
+        console.log('✅ [FRONTEND] Email enviado com sucesso! ID:', result.data.emailId);
         setToast({ message: 'Email enviado com sucesso!', type: 'success' });
         setTimeout(() => {
           onClose();
         }, 2000);
       } else {
-        setToast({ message: result.data.message, type: 'error' });
+        console.error('❌ [FRONTEND] Falha ao enviar email:', result.data.message);
+        setToast({ message: result.data.message || 'Erro ao enviar email', type: 'error' });
         setSendingEmail(false);
       }
     } catch (error) {
-      console.error('Erro ao enviar email:', error);
-      setToast({ message: 'Erro ao enviar email. Tente novamente.', type: 'error' });
+      console.error('❌ [FRONTEND] Exceção ao enviar email:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setToast({ message: `Erro ao enviar email: ${errorMessage}`, type: 'error' });
       setSendingEmail(false);
     }
   };

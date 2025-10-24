@@ -19,10 +19,17 @@ interface SendPermutaEmailResponse {
 
 export const sendPermutaEmail = functions
   .region('southamerica-east1') // São Paulo region
-  .https.onCall(async (data: SendPermutaEmailRequest, context: functions.https.CallableContext): Promise<SendPermutaEmailResponse> => {
+  .https.onCall(async (data: SendPermutaEmailRequest): Promise<SendPermutaEmailResponse> => {
     try {
+      console.log('📧 Iniciando envio de email...', {
+        email: data.email,
+        permutaData: data.permuta?.data,
+        permutaFuncao: data.permuta?.funcao
+      });
+
       // Validação dos dados de entrada
       if (!data.email || !data.permuta) {
+        console.error('❌ Validação falhou: dados incompletos');
         return {
           success: false,
           message: 'Dados inválidos: email e permuta são obrigatórios'
@@ -32,6 +39,7 @@ export const sendPermutaEmail = functions
       // Validação básica de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(data.email)) {
+        console.error('❌ Validação falhou: email inválido', data.email);
         return {
           success: false,
           message: 'Email inválido'
@@ -39,12 +47,15 @@ export const sendPermutaEmail = functions
       }
 
       // Gerar HTML e assunto do email
+      console.log('📝 Gerando conteúdo do email...');
       const htmlContent = generateEmailHTML(data.permuta);
       const subject = generateEmailSubject(data.permuta);
 
       // Enviar email usando Resend
+      // Usando domínio de teste do Resend. Para produção, configure um domínio verificado.
+      console.log('🚀 Enviando email via Resend...');
       const emailData = await resend.emails.send({
-        from: 'GOCG Permutas <noreply@gocgpermutas.com.br>',
+        from: 'GOCG Permutas <onboarding@resend.dev>',
         to: data.email,
         subject: subject,
         html: htmlContent,
@@ -52,7 +63,7 @@ export const sendPermutaEmail = functions
 
       const emailId = emailData.data?.id || 'unknown';
 
-      console.log('Email enviado com sucesso:', {
+      console.log('✅ Email enviado com sucesso:', {
         emailId: emailId,
         destinatario: data.email,
         permutaData: data.permuta.data,
@@ -65,7 +76,11 @@ export const sendPermutaEmail = functions
         emailId: emailId
       };
     } catch (error) {
-      console.error('Erro ao enviar email:', error);
+      console.error('❌ Erro ao enviar email:', {
+        error: error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
 
       // Tratamento de erros específicos do Resend
       if (error instanceof Error) {
