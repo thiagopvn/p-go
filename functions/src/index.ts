@@ -2,9 +2,9 @@ import * as functions from 'firebase-functions/v1';
 import { Resend } from 'resend';
 import { generateEmailHTML, generateEmailSubject, PermutaEmailData } from './emailTemplate';
 
-// Inicializar Resend com a chave da API
-// Usando a chave do .env para testes
-const resend = new Resend(process.env.RESEND_API_KEY || 're_Dn9eooB7_8TPHgWKe35VmxjbsUKTN3Mn6');
+// Inicializar Resend com a chave da API do arquivo .env
+// Nota: Durante o build, a variável pode não estar disponível, mas funcionará em runtime
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
 
 interface SendPermutaEmailRequest {
   email: string;
@@ -52,8 +52,8 @@ export const sendPermutaEmail = functions
       const subject = generateEmailSubject(data.permuta);
 
       // Enviar email usando Resend
-      // IMPORTANTE: Com onboarding@resend.dev, só pode enviar para o email do dono da conta Resend
-      // Para enviar para qualquer email, verifique um domínio em: https://resend.com/domains
+      // Usando domínio de teste do Resend (onboarding@resend.dev)
+      // Se você verificou um domínio próprio, altere para: 'GOCG Permutas <noreply@seudominio.com.br>'
       console.log('🚀 Enviando email via Resend...');
       const emailData = await resend.emails.send({
         from: 'GOCG Permutas <onboarding@resend.dev>',
@@ -70,16 +70,18 @@ export const sendPermutaEmail = functions
 
         // Mensagem amigável para erro de domínio não verificado
         const errorMsg = emailData.error.message || JSON.stringify(emailData.error);
+
+        // Se for erro de limitação de domínio de teste
         if (errorMsg.includes('testing emails') || errorMsg.includes('verify a domain')) {
           return {
             success: false,
-            message: 'Por enquanto, emails só podem ser enviados para: thiagosantoscbmerj@gmail.com. Para habilitar outros emails, é necessário verificar um domínio no Resend.'
+            message: 'Limitação do domínio de teste. Para enviar para qualquer email, verifique um domínio em: resend.com/domains'
           };
         }
 
         return {
           success: false,
-          message: `Erro do Resend: ${errorMsg}`
+          message: `Erro ao enviar email: ${errorMsg}`
         };
       }
 
