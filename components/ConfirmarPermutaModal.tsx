@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Permuta } from '../types';
 import { EmailConfirmationModal } from './EmailConfirmationModal';
 import { Toast } from './Toast';
-import { sendPermutaEmail } from '../firebase';
+import { sendPermutaEmailViaEmailJS } from '../services/emailService';
 
 interface ConfirmarPermutaModalProps {
   permuta: Permuta;
@@ -65,44 +65,24 @@ export const ConfirmarPermutaModal: React.FC<ConfirmarPermutaModalProps> = ({ pe
   const handleSendEmail = async (email: string) => {
     setSendingEmail(true);
     try {
-      console.log('📧 [FRONTEND] Iniciando envio de email para:', email);
+      console.log('📧 [FRONTEND] Iniciando envio de email via EmailJS para:', email);
 
-      const result = await sendPermutaEmail({
+      const result = await sendPermutaEmailViaEmailJS({
         email,
-        permuta: {
-          data: permuta.data,
-          funcao: permuta.funcao,
-          militarEntra: {
-            grad: permuta.militarEntra.grad,
-            quadro: permuta.militarEntra.quadro,
-            nome: permuta.militarEntra.nome,
-            rg: permuta.militarEntra.rg,
-            unidade: permuta.militarEntra.unidade,
-          },
-          militarSai: {
-            grad: permuta.militarSai.grad,
-            quadro: permuta.militarSai.quadro,
-            nome: permuta.militarSai.nome,
-            rg: permuta.militarSai.rg,
-            unidade: permuta.militarSai.unidade,
-          },
-          confirmadaPorMilitarEntra: permuta.confirmadaPorMilitarEntra,
-          confirmadaPorMilitarSai: permuta.confirmadaPorMilitarSai,
-          dataConfirmacao: new Date().toISOString(),
-        },
+        permuta: permuta
       });
 
-      console.log('📧 [FRONTEND] Resultado da função:', result);
+      console.log('📧 [FRONTEND] Resultado do EmailJS:', result);
 
-      if (result.data.success) {
-        console.log('✅ [FRONTEND] Email enviado com sucesso! ID:', result.data.emailId);
+      if (result.success) {
+        console.log('✅ [FRONTEND] Email enviado com sucesso via EmailJS!');
         setToast({ message: 'Email enviado com sucesso!', type: 'success' });
         setTimeout(() => {
           onClose();
         }, 2000);
       } else {
-        console.error('❌ [FRONTEND] Falha ao enviar email:', result.data.message);
-        setToast({ message: result.data.message || 'Erro ao enviar email', type: 'error' });
+        console.error('❌ [FRONTEND] Falha ao enviar email:', result.message);
+        setToast({ message: result.message || 'Erro ao enviar email', type: 'error' });
         setSendingEmail(false);
       }
     } catch (error) {

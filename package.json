@@ -12,6 +12,7 @@
     "migrate:confirmacao": "tsx migrate-confirmacao.ts"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "docx": "^9.5.1",
     "dotenv": "^17.2.3",
     "file-saver": "^2.0.5",
