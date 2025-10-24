@@ -118,7 +118,7 @@ const MilitarInputGroup: React.FC<MilitarInputGroupProps> = ({
                     )}
                 </div>
                 <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-800 mb-1">Nome Completo</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1">Nome de guerra</label>
                     <input
                         type="text"
                         value={militar?.nome || ''}
