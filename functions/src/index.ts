@@ -52,7 +52,8 @@ export const sendPermutaEmail = functions
       const subject = generateEmailSubject(data.permuta);
 
       // Enviar email usando Resend
-      // Usando domínio de teste do Resend. Para produção, configure um domínio verificado.
+      // IMPORTANTE: Com onboarding@resend.dev, só pode enviar para o email do dono da conta Resend
+      // Para enviar para qualquer email, verifique um domínio em: https://resend.com/domains
       console.log('🚀 Enviando email via Resend...');
       const emailData = await resend.emails.send({
         from: 'GOCG Permutas <onboarding@resend.dev>',
@@ -60,6 +61,27 @@ export const sendPermutaEmail = functions
         subject: subject,
         html: htmlContent,
       });
+
+      console.log('📨 Resposta completa do Resend:', JSON.stringify(emailData, null, 2));
+
+      // Verificar se houve erro
+      if (emailData.error) {
+        console.error('❌ Erro retornado pelo Resend:', emailData.error);
+
+        // Mensagem amigável para erro de domínio não verificado
+        const errorMsg = emailData.error.message || JSON.stringify(emailData.error);
+        if (errorMsg.includes('testing emails') || errorMsg.includes('verify a domain')) {
+          return {
+            success: false,
+            message: 'Por enquanto, emails só podem ser enviados para: thiagosantoscbmerj@gmail.com. Para habilitar outros emails, é necessário verificar um domínio no Resend.'
+          };
+        }
+
+        return {
+          success: false,
+          message: `Erro do Resend: ${errorMsg}`
+        };
+      }
 
       const emailId = emailData.data?.id || 'unknown';
 
