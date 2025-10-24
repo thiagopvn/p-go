@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import type { Permuta } from '../types';
+import { EmailConfirmationModal } from './EmailConfirmationModal';
+import { Toast } from './Toast';
+import { sendPermutaEmail } from '../firebase';
 
 interface ConfirmarPermutaModalProps {
   permuta: Permuta;
@@ -15,6 +18,9 @@ export const ConfirmarPermutaModal: React.FC<ConfirmarPermutaModalProps> = ({ pe
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   if (!currentUser) return null;
 
@@ -45,15 +51,80 @@ export const ConfirmarPermutaModal: React.FC<ConfirmarPermutaModalProps> = ({ pe
 
     if (result.success) {
       setSuccess(true);
+      // Ao invés de fechar automaticamente, mostrar o modal de email
       setTimeout(() => {
-        onClose();
-      }, 2000);
+        setShowEmailModal(true);
+      }, 1500);
     } else {
       setError(result.error || 'Erro ao confirmar permuta.');
     }
 
     setLoading(false);
   };
+
+  const handleSendEmail = async (email: string) => {
+    setSendingEmail(true);
+    try {
+      const result = await sendPermutaEmail({
+        email,
+        permuta: {
+          data: permuta.data,
+          funcao: permuta.funcao,
+          militarEntra: {
+            grad: permuta.militarEntra.grad,
+            quadro: permuta.militarEntra.quadro,
+            nome: permuta.militarEntra.nome,
+            rg: permuta.militarEntra.rg,
+            unidade: permuta.militarEntra.unidade,
+          },
+          militarSai: {
+            grad: permuta.militarSai.grad,
+            quadro: permuta.militarSai.quadro,
+            nome: permuta.militarSai.nome,
+            rg: permuta.militarSai.rg,
+            unidade: permuta.militarSai.unidade,
+          },
+          confirmadaPorMilitarEntra: permuta.confirmadaPorMilitarEntra,
+          confirmadaPorMilitarSai: permuta.confirmadaPorMilitarSai,
+          dataConfirmacao: new Date().toISOString(),
+        },
+      });
+
+      if (result.data.success) {
+        setToast({ message: 'Email enviado com sucesso!', type: 'success' });
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        setToast({ message: result.data.message, type: 'error' });
+        setSendingEmail(false);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar email:', error);
+      setToast({ message: 'Erro ao enviar email. Tente novamente.', type: 'error' });
+      setSendingEmail(false);
+    }
+  };
+
+  const handleCloseEmailModal = () => {
+    setShowEmailModal(false);
+    onClose();
+  };
+
+  // Se o modal de email estiver aberto, renderizar apenas ele
+  if (showEmailModal) {
+    return (
+      <>
+        <EmailConfirmationModal
+          permuta={permuta}
+          onClose={handleCloseEmailModal}
+          onConfirm={handleSendEmail}
+          isLoading={sendingEmail}
+        />
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      </>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4 animate-fadeIn">

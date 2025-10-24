@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GOCG Permutas is a full-stack React + TypeScript + Firebase application for managing service swap requests (permutas) for GOCG military personnel. The app features authentication, real-time data synchronization, an administrative dashboard for approving/rejecting requests, and document generation capabilities. Deployed on Vercel.
+GOCG Permutas is a full-stack React + TypeScript + Firebase application for managing service swap requests (permutas) for GOCG military personnel. The app features authentication, real-time data synchronization, an administrative dashboard for approving/rejecting requests, document generation capabilities, and email confirmation system. Deployed on Vercel.
+
+**New Feature**: Email confirmation system with Firebase Cloud Functions and Resend integration. See `EMAIL_QUICKSTART.md` for setup.
 
 ## Development Commands
 
@@ -23,6 +25,10 @@ npm run build
 
 # Preview production build
 npm preview
+
+# Firebase Functions (Email feature)
+cd functions && npm install && npm run build
+firebase deploy --only functions
 ```
 
 ## Environment Setup
@@ -50,6 +56,8 @@ VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
   - `permutas`: Swap requests with references to militares by RG
 - **Real-time Sync**: Uses Firestore `onSnapshot` listeners for real-time updates
 - **Authentication**: Custom authentication using Firestore (not Firebase Auth)
+- **Cloud Functions**: Serverless functions for email sending (region: southamerica-east1)
+  - `sendPermutaEmail`: Sends permuta confirmation via Resend service
 
 ### State Management
 
@@ -143,3 +151,100 @@ DocumentView formats dates in Brazilian format (pt-BR) with UTC timezone to prev
 The app ships with 93 pre-loaded military personnel in MILITARES_INICIAIS (constants.ts). Run `npm run migrate` to populate Firestore. All militares get:
 - Default password = their RG number
 - Default role = 'user' (except RG 12961 which gets 'admin')
+
+## Email Confirmation Feature
+
+### Overview
+After confirming a permuta with electronic signature, users can optionally receive a professional email confirmation with full permuta details and legal validity notice.
+
+### Components
+- **EmailConfirmationModal** (components/EmailConfirmationModal.tsx): Beautiful modal asking if user wants to receive email, with validation field and legal notice
+- **Toast** (components/Toast.tsx): Elegant notification system for success/error feedback
+- **sendPermutaEmail** (functions/src/index.ts): Cloud Function that sends email via Resend API
+- **emailTemplate** (functions/src/emailTemplate.ts): Responsive HTML template generator
+
+### User Flow
+1. User confirms permuta with password → ConfirmarPermutaModal
+2. Success message shown (1.5s delay)
+3. EmailConfirmationModal appears with:
+   - Question: "Deseja receber a permuta por e-mail?"
+   - Legal notice box (STJ jurisprudence REsp 1.381.603/MS)
+   - Email input field with validation
+   - Permuta summary
+   - Yes/No buttons
+4. If "No": Modal closes
+5. If "Yes" without email: Error message shown
+6. If "Yes" with valid email:
+   - Cloud Function called
+   - Email sent via Resend
+   - Success toast notification
+   - Modal closes after 2s
+
+### Email Template Features
+- Professional responsive HTML design
+- Gradient header with GOCG branding
+- Success badge with confirmation timestamp
+- Service date and function
+- Side-by-side militar cards (entra/sai)
+- Visual confirmation status (✓ Confirmado / ⏳ Pendente)
+- Legal validity notice (STJ)
+- Styled footer
+
+### Configuration Required
+1. Create Resend account: https://resend.com
+2. Get API key from: https://resend.com/api-keys
+3. Configure in Firebase: `firebase functions:config:set resend.api_key="re_xxxxx"`
+4. Install dependencies: `cd functions && npm install`
+5. Build: `npm run build`
+6. Deploy: `firebase deploy --only functions`
+
+See `EMAIL_QUICKSTART.md` for 5-minute setup guide.
+
+### Files Structure
+```
+Frontend:
+- components/EmailConfirmationModal.tsx (new)
+- components/Toast.tsx (new)
+- components/ConfirmarPermutaModal.tsx (modified - integrates email modal)
+- firebase.ts (modified - exports sendPermutaEmail function)
+
+Backend:
+- functions/src/index.ts (new - Cloud Function)
+- functions/src/emailTemplate.ts (new - HTML generator)
+- functions/package.json (new)
+- functions/tsconfig.json (new)
+- firebase.json (new)
+- .firebaserc (new)
+
+Documentation:
+- EMAIL_QUICKSTART.md (quick setup guide)
+- FIREBASE_FUNCTIONS_SETUP.md (detailed configuration)
+- IMPLEMENTACAO_EMAIL.md (complete technical documentation)
+- README_EMAIL.md (feature overview)
+```
+
+### Costs
+Free for typical GOCG usage:
+- Resend: 3,000 emails/month free
+- Firebase Functions: 2M invocations/month free
+- Estimated usage: ~200 emails/month = 100% free
+
+### Security
+- Email validation (frontend + backend)
+- HTTPS only (Cloud Functions)
+- API key in environment variables (not in code)
+- CORS handled automatically
+- Structured logging
+- Error handling
+
+### Monitoring
+```bash
+# View function logs
+firebase functions:log --only sendPermutaEmail
+
+# View all logs
+firebase functions:log
+
+# Resend dashboard
+https://resend.com/emails
+```
