@@ -123,6 +123,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Normalize strings for case-insensitive comparison
       const normalize = (str: string) => str.trim().toLowerCase();
 
+      // Log para debug - confirmar que quadro não está sendo validado
+      console.log('📋 [CADASTRO] Dados fornecidos:', {
+        grad: data.grad,
+        quadro: data.quadro,
+        nome: data.nome,
+        unidade: data.unidade
+      });
+      console.log('📋 [CADASTRO] Dados no banco:', {
+        grad: militarData.grad,
+        quadro: militarData.quadro,
+        nome: militarData.nome,
+        unidade: militarData.unidade
+      });
+
       // Validate all fields against militares data
       // IMPORTANTE: Quadro NÃO é validado - usuário pode informar qualquer valor
       const validations = [
@@ -142,6 +156,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           expected: normalize(militarData.unidade)
         }
       ];
+
+      console.log('🔍 [CADASTRO] Campos sendo validados:', validations.map(v => v.field));
 
       // Check for validation errors
       const errors = validations.filter(v => v.provided !== v.expected);
