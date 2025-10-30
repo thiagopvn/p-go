@@ -1,0 +1,4 @@
+VERSION: 2024-10-30-15:45
+CHANGES: Quadro field is NOT validated during registration
+The 'quadro' validation has been completely removed from AuthContext.tsx
+Users can enter any value for 'quadro' field

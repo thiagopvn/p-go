@@ -93,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       console.log('🔍 [CADASTRO] Iniciando validação para RG:', data.rg);
+      console.log('📌 [VERSÃO] 2024-10-30 - Quadro NÃO é validado');
 
       // First, check if already registered in usuarios collection
       const existingUserDoc = await getDoc(doc(db, 'usuarios', data.rg));
