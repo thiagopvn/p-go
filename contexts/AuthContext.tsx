@@ -26,6 +26,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [role, setRole] = useState<'admin' | 'user' | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Version check - REMOVE AFTER CONFIRMING DEPLOYMENT
+  console.log('🚀 APP VERSION: 2024-10-30 15:50 - QUADRO NOT VALIDATED');
+
   // Check for persisted user session on mount
   useEffect(() => {
     const storedUser = localStorage.getItem('currentUser');
