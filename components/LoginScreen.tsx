@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { GRADUACOES, QUADROS, UNIDADES } from '../constants';
+import { CadastroFeedbackModal } from './CadastroFeedbackModal';
 
 type ViewMode = 'login' | 'cadastro';
 
@@ -10,6 +11,9 @@ export const LoginScreen: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackIsSuccess, setFeedbackIsSuccess] = useState(false);
+  const [feedbackErrorMessage, setFeedbackErrorMessage] = useState('');
 
   // Login form state
   const [loginRg, setLoginRg] = useState('');
@@ -76,20 +80,26 @@ export const LoginScreen: React.FC = () => {
     });
 
     if (result.success) {
-      setSuccess('Cadastro realizado com sucesso! Redirecionando para login...');
-      // Reset form and switch to login
+      // Mostrar modal de sucesso
+      setFeedbackIsSuccess(true);
+      setFeedbackErrorMessage('');
+      setShowFeedbackModal(true);
+
+      // Reset form
+      const savedRg = cadastroData.rg;
       setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
+
+      // Após fechar o modal, ir para login
       setTimeout(() => {
         setViewMode('login');
-        setSuccess('');
-        // Pre-fill login RG
-        setLoginRg(cadastroData.rg);
-      }, 2000);
+        setLoginRg(savedRg);
+        setShowFeedbackModal(false);
+      }, 3000);
     } else {
-      // Check if error message mentions contacting TEN Thiago Santos (with any case)
-      if (result.error?.toLowerCase().includes('thiago santos') || result.error?.toLowerCase().includes('erro no cadastro')) {
-        setShowErrorModal(true);
-      }
+      // Mostrar modal de erro
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
+      setShowFeedbackModal(true);
       setError(result.error || 'Erro ao cadastrar.');
     }
   };
@@ -352,6 +362,20 @@ export const LoginScreen: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de Feedback do Cadastro */}
+      <CadastroFeedbackModal
+        isOpen={showFeedbackModal}
+        isSuccess={feedbackIsSuccess}
+        errorMessage={feedbackErrorMessage}
+        onClose={() => {
+          setShowFeedbackModal(false);
+          if (feedbackIsSuccess) {
+            // Se sucesso, já vai para login automaticamente
+            setViewMode('login');
+          }
+        }}
+      />
 
       {/* Error Modal for data mismatch */}
       {showErrorModal && (
