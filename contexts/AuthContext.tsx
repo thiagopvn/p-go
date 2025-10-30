@@ -123,7 +123,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Normalize strings for case-insensitive comparison
       const normalize = (str: string) => str.trim().toLowerCase();
 
-      // Validate all fields against militares data (exceto quadro)
+      // Validate all fields against militares data
+      // IMPORTANTE: Quadro NÃO é validado - usuário pode informar qualquer valor
       const validations = [
         {
           field: 'graduação',
