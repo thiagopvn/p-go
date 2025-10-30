@@ -285,7 +285,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
   // Check if permutas is valid and not empty
   if (!permutas || permutas.length === 0) {
     return (
-      <div className="bg-gray-200 min-h-screen p-8 pb-20">
+      <div className="bg-gray-200 min-h-screen p-8 pb-14">
         <div className="max-w-4xl mx-auto bg-white p-12 shadow-lg">
           <p className="text-center text-gray-600">Nenhuma permuta selecionada para gerar documento.</p>
           <div className="mt-8 flex justify-center">
@@ -345,7 +345,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
   }
 
   return (
-    <div className="bg-gray-200 min-h-screen p-8 pb-20 print:p-0 print:bg-white">
+    <div className="bg-gray-200 min-h-screen p-8 pb-14 print:p-0 print:bg-white">
       <div className="max-w-4xl mx-auto bg-white p-12 shadow-lg print:shadow-none" id="document-to-print">
         <div className="text-center font-serif text-black space-y-4 mb-10">
           <p className="text-lg font-bold">ESCALA DE SERVIÇO – COMANDANTE DE SOCORRO – ALTERAÇÃO – ANEXO XX – NOTA GOCG {noteNumber}</p>
@@ -428,22 +428,22 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
 
       <Footer />
 
-       <style>{`
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            #document-to-print, #document-to-print * {
-              visibility: visible;
-            }
-            #document-to-print {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-            }
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
           }
-        `}</style>
+          #document-to-print, #document-to-print * {
+            visibility: visible;
+          }
+          #document-to-print {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 };
