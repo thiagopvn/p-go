@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Modal } from './Modal';
 import { useAppContext } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
