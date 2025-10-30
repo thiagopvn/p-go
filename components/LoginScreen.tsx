@@ -54,19 +54,31 @@ export const LoginScreen: React.FC = () => {
     // Validate all fields
     if (!cadastroData.rg || !cadastroData.grad || !cadastroData.quadro ||
         !cadastroData.nome || !cadastroData.unidade || !cadastroData.senha) {
-      setError('Por favor, preencha todos os campos.');
+      const errorMsg = 'Por favor, preencha todos os campos.';
+      setError(errorMsg);
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(errorMsg);
+      setShowFeedbackModal(true);
       return;
     }
 
     // Validate password confirmation
     if (cadastroData.senha !== cadastroData.confirmarSenha) {
-      setError('As senhas não coincidem.');
+      const errorMsg = 'As senhas não coincidem.';
+      setError(errorMsg);
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(errorMsg);
+      setShowFeedbackModal(true);
       return;
     }
 
     // Validate password length
     if (cadastroData.senha.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.');
+      const errorMsg = 'A senha deve ter pelo menos 6 caracteres.';
+      setError(errorMsg);
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(errorMsg);
+      setShowFeedbackModal(true);
       return;
     }
 
