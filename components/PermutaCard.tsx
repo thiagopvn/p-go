@@ -27,9 +27,7 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
   // Verificar se pode inverter (apenas pendente e não enviada)
   const podeInverter = isCriador &&
     permuta.status === 'Pendente' &&
-    !permuta.enviada &&
-    !permuta.confirmadaPorMilitarEntra &&
-    !permuta.confirmadaPorMilitarSai;
+    !permuta.enviada;
 
   const handleInverter = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Evitar abrir o modal ao clicar no botão
