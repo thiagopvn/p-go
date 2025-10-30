@@ -2,6 +2,7 @@ import React from 'react';
 import { AdminDashboard } from './components/AdminDashboard';
 import { UserDashboard } from './components/UserDashboard';
 import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import { useAppContext } from './contexts/AppContext';
 import { useAuth } from './contexts/AuthContext';
 import { PermutaRequestModal } from './components/PermutaRequestModal';
@@ -45,9 +46,11 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text font-sans">
       <Header />
-      <main className="p-4 sm:p-6 lg:p-8">
+      <main className="p-4 sm:p-6 lg:p-8 pb-20">
         {role === 'admin' ? <AdminDashboard /> : <UserDashboard />}
       </main>
+
+      <Footer />
 
       {activeModal === 'requestPermuta' && (
         <PermutaRequestModal onClose={closeModal} />
