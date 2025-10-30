@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Permuta } from '../types';
 import { useAppContext } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PermutaCardProps {
   permuta: Permuta;
@@ -13,7 +14,37 @@ const statusStyles: { [key in Permuta['status']]: string } = {
 };
 
 export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
-  const { selectPermuta } = useAppContext();
+  const { selectPermuta, inverterMilitaresPermuta } = useAppContext();
+  const { currentUser } = useAuth();
+  const [isInverting, setIsInverting] = useState(false);
+
+  // Verificar se o usuário atual é o criador da permuta (quem solicitou)
+  const isCriador = currentUser && (
+    permuta.militarSai.rg === currentUser.rg ||
+    permuta.militarEntra.rg === currentUser.rg
+  );
+
+  // Verificar se pode inverter (apenas pendente e não enviada)
+  const podeInverter = isCriador &&
+    permuta.status === 'Pendente' &&
+    !permuta.enviada &&
+    !permuta.confirmadaPorMilitarEntra &&
+    !permuta.confirmadaPorMilitarSai;
+
+  const handleInverter = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar abrir o modal ao clicar no botão
+
+    if (isInverting) return;
+
+    setIsInverting(true);
+    const result = await inverterMilitaresPermuta(permuta.id);
+
+    if (!result.success) {
+      alert(result.error || 'Erro ao inverter militares');
+    }
+
+    setIsInverting(false);
+  };
 
   return (
     <div
@@ -44,6 +75,35 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
             )}
           </div>
         </div>
+
+        {/* Botão de inverter militares */}
+        {podeInverter && (
+          <div className="mb-3">
+            <button
+              onClick={handleInverter}
+              disabled={isInverting}
+              className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+              title="Inverter quem entra e quem sai na permuta"
+            >
+              {isInverting ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Invertendo...
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                  </svg>
+                  Inverter Militares
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         <div className="space-y-3 text-sm">
           <div className="p-3 bg-red-50 rounded-md relative">

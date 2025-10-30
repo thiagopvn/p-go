@@ -16,6 +16,7 @@ interface AppContextType {
   arquivarPermutas: (permutaIds: string[]) => Promise<void>;
   desarquivarPermutas: (permutaIds: string[]) => Promise<void>;
   confirmarPermuta: (permutaId: string, rgMilitar: string, senha: string) => Promise<{success: boolean; error?: string}>;
+  inverterMilitaresPermuta: (permutaId: string) => Promise<{success: boolean; error?: string}>;
   activeModal: string | null;
   openModal: (modal: string) => void;
   closeModal: () => void;
@@ -287,13 +288,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const inverterMilitaresPermuta = async (permutaId: string): Promise<{success: boolean; error?: string}> => {
+    try {
+      // Buscar permuta no Firestore
+      const permutaDoc = await getDoc(doc(db, 'permutas', permutaId));
+      if (!permutaDoc.exists()) {
+        return { success: false, error: 'Permuta não encontrada.' };
+      }
+
+      const permutaData = permutaDoc.data() as PermutaFirestore;
+
+      // Inverter os RGs dos militares
+      await updateDoc(doc(db, 'permutas', permutaId), {
+        militarEntraRg: permutaData.militarSaiRg,
+        militarSaiRg: permutaData.militarEntraRg,
+        // Inverter também as confirmações
+        confirmadaPorMilitarEntra: permutaData.confirmadaPorMilitarSai,
+        confirmadaPorMilitarSai: permutaData.confirmadaPorMilitarEntra,
+        dataConfirmacaoMilitarEntra: permutaData.dataConfirmacaoMilitarSai,
+        dataConfirmacaoMilitarSai: permutaData.dataConfirmacaoMilitarEntra
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error inverting permuta militares:', error);
+      return { success: false, error: 'Erro ao inverter militares. Tente novamente.' };
+    }
+  };
+
   const openModal = (modal: string) => setActiveModal(modal);
   const closeModal = () => setActiveModal(null);
 
   const selectPermuta = (permuta: Permuta) => setSelectedPermuta(permuta);
   const clearSelectedPermuta = () => setSelectedPermuta(null);
 
-  const setDocumentData = (permuta: Permuta | null) => setDocumentDataState(permuta);
+  const setDocumentData = (permutas: Permuta[] | null) => setDocumentDataState(permutas);
   const clearDocumentData = () => setDocumentDataState(null);
 
   const value = {
@@ -309,6 +338,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     arquivarPermutas,
     desarquivarPermutas,
     confirmarPermuta,
+    inverterMilitaresPermuta,
     activeModal,
     openModal,
     closeModal,
