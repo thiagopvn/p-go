@@ -1,4 +1,0 @@
-FORCE REBUILD: 2024-10-30 15:50
-This file forces Vercel to rebuild the entire project.
-The quadro validation has been removed from AuthContext.tsx
-Delete this file after the rebuild is complete.

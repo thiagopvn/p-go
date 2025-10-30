@@ -13,6 +13,9 @@ export const CadastroFeedbackModal: React.FC<CadastroFeedbackModalProps> = ({
   errorMessage,
   onClose
 }) => {
+  // Debug log
+  console.log('CadastroFeedbackModal - isOpen:', isOpen, 'isSuccess:', isSuccess, 'errorMessage:', errorMessage);
+
   if (!isOpen) return null;
 
   const handleWhatsAppClick = () => {
@@ -21,7 +24,7 @@ export const CadastroFeedbackModal: React.FC<CadastroFeedbackModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-      <div className="relative mx-auto border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white animate-fadeIn">
+      <div className="relative mx-auto border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white">
         <div className="p-8">
           <div className="text-center">
             {/* Ícone de Sucesso ou Erro */}

@@ -79,23 +79,25 @@ export const LoginScreen: React.FC = () => {
       unidade: cadastroData.unidade
     });
 
+    console.log('Resultado do cadastro:', result);
+
     if (result.success) {
+      console.log('Cadastro com sucesso! Mostrando modal...');
+      // Salvar RG antes de limpar o form
+      const savedRg = cadastroData.rg;
+
+      // Reset form
+      setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
+
       // Mostrar modal de sucesso
       setFeedbackIsSuccess(true);
       setFeedbackErrorMessage('');
       setShowFeedbackModal(true);
 
-      // Reset form
-      const savedRg = cadastroData.rg;
-      setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
-
-      // Após fechar o modal, ir para login
-      setTimeout(() => {
-        setViewMode('login');
-        setLoginRg(savedRg);
-        setShowFeedbackModal(false);
-      }, 3000);
+      // Pre-fill login RG
+      setLoginRg(savedRg);
     } else {
+      console.log('Erro no cadastro! Mostrando modal de erro...');
       // Mostrar modal de erro
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
@@ -371,9 +373,13 @@ export const LoginScreen: React.FC = () => {
         onClose={() => {
           setShowFeedbackModal(false);
           if (feedbackIsSuccess) {
-            // Se sucesso, já vai para login automaticamente
+            // Se sucesso, vai para login
             setViewMode('login');
+            // RG já foi preenchido anteriormente
           }
+          // Limpar mensagens
+          setError('');
+          setSuccess('');
         }}
       />
 
