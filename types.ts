@@ -21,7 +21,7 @@ export interface Usuario {
   createdAt?: Date; // When the user registered
 }
 
-export type Funcao = "COMANDANTE DO 1º SOCORRO" | "COMANDANTE DO 2º SOCORRO" | "BUSCA E SALVAMENTO";
+export type Funcao = "COMANDANTE DO 1º SOCORRO" | "COMANDANTE DO 2º SOCORRO" | "BUSCA E SALVAMENTO" | "OFICIAL DE DIA AO QCG";
 
 export interface Permuta {
   id: string;

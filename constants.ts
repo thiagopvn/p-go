@@ -3,7 +3,8 @@ import type { Funcao, Militar } from './types';
 export const FUNCOES: Funcao[] = [
   "COMANDANTE DO 1º SOCORRO",
   "COMANDANTE DO 2º SOCORRO",
-  "BUSCA E SALVAMENTO"
+  "BUSCA E SALVAMENTO",
+  "OFICIAL DE DIA AO QCG"
 ];
 
 // Listas extraídas dos militares para uso em dropdowns
