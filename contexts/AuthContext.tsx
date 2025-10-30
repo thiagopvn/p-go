@@ -123,17 +123,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Normalize strings for case-insensitive comparison
       const normalize = (str: string) => str.trim().toLowerCase();
 
-      // Validate all fields against militares data
+      // Validate all fields against militares data (exceto quadro)
       const validations = [
         {
           field: 'graduação',
           provided: normalize(data.grad),
           expected: normalize(militarData.grad)
-        },
-        {
-          field: 'quadro',
-          provided: normalize(data.quadro),
-          expected: normalize(militarData.quadro)
         },
         {
           field: 'nome',
@@ -168,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         senha: data.senha,
         role: data.rg === '53717' ? 'admin' : 'user', // Ten Thiago Santos gets admin role
         grad: militarData.grad, // Use validated data from militares
-        quadro: militarData.quadro,
+        quadro: data.quadro, // Use user-provided quadro (não precisa validar)
         nome: militarData.nome,
         unidade: militarData.unidade,
         createdAt: new Date()
