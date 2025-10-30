@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 GOCG Permutas is a full-stack React + TypeScript + Firebase application for managing service swap requests (permutas) for GOCG military personnel. The app features authentication, real-time data synchronization, an administrative dashboard for approving/rejecting requests, document generation capabilities, and email confirmation system. Deployed on Vercel.
 
+Last updated: October 30, 2025
+
 **New Feature**: Email confirmation system with Firebase Cloud Functions and Resend integration. See `EMAIL_QUICKSTART.md` for setup.
 
 ## Development Commands
