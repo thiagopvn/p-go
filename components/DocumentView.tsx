@@ -294,8 +294,8 @@ export const DocumentView: React.FC<DocumentViewProps> = ({ permutas, onBack }) 
             </button>
           </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
     );
   }
 
