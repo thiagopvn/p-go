@@ -298,16 +298,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const permutaData = permutaDoc.data() as PermutaFirestore;
 
-      // Inverter os RGs dos militares
-      await updateDoc(doc(db, 'permutas', permutaId), {
+      // Preparar dados de atualização (apenas incluir campos não-undefined)
+      const updateData: any = {
         militarEntraRg: permutaData.militarSaiRg,
         militarSaiRg: permutaData.militarEntraRg,
-        // Inverter também as confirmações
-        confirmadaPorMilitarEntra: permutaData.confirmadaPorMilitarSai,
-        confirmadaPorMilitarSai: permutaData.confirmadaPorMilitarEntra,
-        dataConfirmacaoMilitarEntra: permutaData.dataConfirmacaoMilitarSai,
-        dataConfirmacaoMilitarSai: permutaData.dataConfirmacaoMilitarEntra
-      });
+        // Inverter as confirmações (usar false como padrão se undefined)
+        confirmadaPorMilitarEntra: permutaData.confirmadaPorMilitarSai || false,
+        confirmadaPorMilitarSai: permutaData.confirmadaPorMilitarEntra || false,
+      };
+
+      // Adicionar datas apenas se existirem
+      if (permutaData.dataConfirmacaoMilitarSai !== undefined) {
+        updateData.dataConfirmacaoMilitarEntra = permutaData.dataConfirmacaoMilitarSai;
+      } else {
+        // Remover o campo se não houver data
+        updateData.dataConfirmacaoMilitarEntra = null;
+      }
+
+      if (permutaData.dataConfirmacaoMilitarEntra !== undefined) {
+        updateData.dataConfirmacaoMilitarSai = permutaData.dataConfirmacaoMilitarEntra;
+      } else {
+        // Remover o campo se não houver data
+        updateData.dataConfirmacaoMilitarSai = null;
+      }
+
+      await updateDoc(doc(db, 'permutas', permutaId), updateData);
 
       return { success: true };
     } catch (error) {
