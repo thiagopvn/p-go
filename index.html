@@ -1,103 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GOCG Permutas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'brand-blue': '#1e3a8a',
-              'brand-blue-light': '#2563eb',
-              'brand-blue-dark': '#1e40af',
-              'brand-accent': '#60a5fa',
-              'brand-bg': '#f0f4f8',
-              'brand-surface': '#ffffff',
-              'brand-text': '#111827',
-              'brand-text-light': '#6b7280',
-              // Cores para seções diferenciadas
-              'section-date': '#fef3c7',      // Amarelo claro para data
-              'section-date-border': '#f59e0b', // Amarelo escuro
-              'section-enter': '#d1fae5',     // Verde claro para ENTRA
-              'section-enter-border': '#10b981', // Verde médio
-              'section-exit': '#fee2e2',      // Vermelho claro para SAI
-              'section-exit-border': '#ef4444', // Vermelho médio
-              'section-service': '#e0e7ff',   // Índigo claro para serviço
-              'section-service-border': '#6366f1', // Índigo médio
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      /* Reset CSS e configurações base */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html, body {
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-      }
-
-      #root {
-        min-height: 100vh;
-        width: 100%;
-      }
-
-      /* Garantir que container funcione corretamente */
-      .container {
-        width: 100%;
-        margin-right: auto;
-        margin-left: auto;
-        padding-right: 1rem;
-        padding-left: 1rem;
-      }
-
-      @media (min-width: 640px) {
-        .container {
-          max-width: 640px;
-          padding-right: 1.5rem;
-          padding-left: 1.5rem;
-        }
-      }
-
-      @media (min-width: 768px) {
-        .container {
-          max-width: 768px;
-        }
-      }
-
-      @media (min-width: 1024px) {
-        .container {
-          max-width: 1024px;
-          padding-right: 2rem;
-          padding-left: 2rem;
-        }
-      }
-
-      @media (min-width: 1280px) {
-        .container {
-          max-width: 1280px;
-        }
-      }
-
-      @media (min-width: 1536px) {
-        .container {
-          max-width: 1536px;
-        }
-      }
-    </style>
-    <link rel="stylesheet" href="./index.css">
-</head>
-  <body class="bg-brand-bg">
+  </head>
+  <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
