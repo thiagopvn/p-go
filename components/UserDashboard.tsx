@@ -63,7 +63,7 @@ export const UserDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="container mx-auto">
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h1 className="text-3xl font-bold text-brand-blue-dark">Bem-vindo, {currentUser.grad} {currentUser.nome}</h1>
         <p className="text-brand-text-light mt-1">Aqui você pode visualizar e solicitar suas permutas de serviço.</p>

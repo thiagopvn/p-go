@@ -46,7 +46,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text font-sans">
       <Header />
-      <main className="py-6 sm:py-8 lg:py-10 pb-20">
+      <main className="py-6 pb-20">
         {role === 'admin' ? <AdminDashboard /> : <UserDashboard />}
       </main>
 

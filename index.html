@@ -33,7 +33,69 @@
         }
       }
     </script>
-  <link rel="stylesheet" href="/index.css">
+    <style>
+      /* Reset CSS e configurações base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      #root {
+        min-height: 100vh;
+        width: 100%;
+      }
+
+      /* Garantir que container funcione corretamente */
+      .container {
+        width: 100%;
+        margin-right: auto;
+        margin-left: auto;
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        .container {
+          max-width: 640px;
+          padding-right: 1.5rem;
+          padding-left: 1.5rem;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .container {
+          max-width: 768px;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .container {
+          max-width: 1024px;
+          padding-right: 2rem;
+          padding-left: 2rem;
+        }
+      }
+
+      @media (min-width: 1280px) {
+        .container {
+          max-width: 1280px;
+        }
+      }
+
+      @media (min-width: 1536px) {
+        .container {
+          max-width: 1536px;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="./index.css">
 </head>
   <body class="bg-brand-bg">
     <div id="root"></div>
