@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Modal Cadastro</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Teste do Modal de Cadastro</h1>
+
+    <h2>Para testar o modal de erro:</h2>
+    <ol>
+        <li>Acesse: http://localhost:3002/</li>
+        <li>Clique na aba "Cadastrar"</li>
+        <li>Teste os seguintes cenários:</li>
+    </ol>
+
+    <h3>Cenário 1 - Campos vazios:</h3>
+    <p>Deixe algum campo vazio e clique em "Cadastrar"</p>
+    <p>Resultado esperado: Modal de erro com mensagem "Por favor, preencha todos os campos."</p>
+
+    <h3>Cenário 2 - Senhas não coincidem:</h3>
+    <p>Preencha todos os campos mas coloque senhas diferentes</p>
+    <p>Resultado esperado: Modal de erro com mensagem "As senhas não coincidem."</p>
+
+    <h3>Cenário 3 - Senha curta:</h3>
+    <p>Use uma senha com menos de 6 caracteres</p>
+    <p>Resultado esperado: Modal de erro com mensagem "A senha deve ter pelo menos 6 caracteres."</p>
+
+    <h3>Cenário 4 - RG inválido:</h3>
+    <p>Use um RG que não existe na base, por exemplo: 99999</p>
+    <ul>
+        <li>RG: 99999</li>
+        <li>Nome: Teste</li>
+        <li>Posto: 2º Ten</li>
+        <li>Quadro: QOMBM</li>
+        <li>Unidade: 1º GSFMA</li>
+        <li>Senha: 123456</li>
+        <li>Confirmar Senha: 123456</li>
+    </ul>
+    <p>Resultado esperado: Modal de erro com botão WhatsApp para contato</p>
+
+    <h3>Cenário 5 - RG já cadastrado:</h3>
+    <p>Use o RG: 12961 (que já está cadastrado como admin)</p>
+    <p>Resultado esperado: Modal de erro com mensagem "Este RG já está cadastrado na plataforma."</p>
+</body>
+</html>

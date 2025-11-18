@@ -296,7 +296,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       {/* Tab Navigation */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
         <div className="flex border-b border-gray-200">
