@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { PermutaCard } from './PermutaCard';
 import { FileTextIcon } from './icons/FileTextIcon';
+import { ArchivedTableView } from './ArchivedTableView';
 
-type TabType = 'pendentes' | 'processadas' | 'arquivadas';
+type TabType = 'pendentes' | 'processadas' | 'arquivadas' | 'tabela';
 
 export const AdminDashboard: React.FC = () => {
   const { permutas, setDocumentData, arquivarPermutas, desarquivarPermutas } = useAppContext();
@@ -292,6 +293,9 @@ export const AdminDashboard: React.FC = () => {
             )}
           </div>
         );
+
+      case 'tabela':
+        return <ArchivedTableView arquivadas={arquivadas} />;
     }
   };
 
@@ -362,6 +366,28 @@ export const AdminDashboard: React.FC = () => {
               )}
             </span>
             {activeTab === 'arquivadas' && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-brand-blue"></div>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('tabela')}
+            className={`flex-1 py-4 px-6 font-medium text-sm transition-all duration-200 relative ${
+              activeTab === 'tabela'
+                ? 'text-brand-blue bg-brand-accent bg-opacity-10'
+                : 'text-brand-text-light hover:bg-gray-50'
+            }`}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <span>📊</span>
+              <span>Visualizar em Tabela</span>
+              {arquivadas.length > 0 && (
+                <span className="ml-1 bg-purple-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                  {arquivadas.length}
+                </span>
+              )}
+            </span>
+            {activeTab === 'tabela' && (
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-brand-blue"></div>
             )}
           </button>
