@@ -8,8 +8,8 @@ interface ArchivedTableViewProps {
 export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas }) => {
   // Ordenar as permutas por data (do mais antigo para o mais recente)
   const sortedPermutas = [...arquivadas].sort((a, b) => {
-    const dateA = new Date(a.dataServico);
-    const dateB = new Date(b.dataServico);
+    const dateA = new Date(a.data);
+    const dateB = new Date(b.data);
     return dateA.getTime() - dateB.getTime();
   });
 
@@ -75,7 +75,7 @@ export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas
                   Data do Serviço
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Tipo de Serviço
+                  Função de Serviço
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Militar que Sai
@@ -101,14 +101,14 @@ export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas
                   {/* Data do Serviço */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {formatDate(permuta.dataServico)}
+                      {formatDate(permuta.data)}
                     </div>
                   </td>
 
-                  {/* Tipo de Serviço */}
+                  {/* Função de Serviço */}
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900 font-medium">
-                      {permuta.funcao?.nome || 'N/A'}
+                      {permuta.funcao || 'N/A'}
                     </div>
                   </td>
 
@@ -141,7 +141,7 @@ export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(permuta.status)}`}>
                       {permuta.status}
                     </span>
-                    {permuta.militarEntraConfirmado && permuta.militarSaiConfirmado && (
+                    {permuta.confirmadaPorMilitarEntra && permuta.confirmadaPorMilitarSai && (
                       <div className="mt-1">
                         <span className="text-xs text-green-600">✓ Confirmada</span>
                       </div>
