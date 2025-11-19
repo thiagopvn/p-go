@@ -6,11 +6,11 @@ interface ArchivedTableViewProps {
 }
 
 export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas }) => {
-  // Ordenar as permutas por data (do mais antigo para o mais recente)
+  // Ordenar as permutas por data (do mais recente para o mais antigo)
   const sortedPermutas = [...arquivadas].sort((a, b) => {
     const dateA = new Date(a.data);
     const dateB = new Date(b.data);
-    return dateA.getTime() - dateB.getTime();
+    return dateB.getTime() - dateA.getTime();
   });
 
   // Função para formatar a data no padrão brasileiro
@@ -156,7 +156,7 @@ export const ArchivedTableView: React.FC<ArchivedTableViewProps> = ({ arquivadas
 
       {/* Rodapé informativo */}
       <div className="mt-4 text-sm text-brand-text-light text-center">
-        Exibindo {sortedPermutas.length} {sortedPermutas.length === 1 ? 'permuta' : 'permutas'} ordenadas da mais antiga para a mais recente
+        Exibindo {sortedPermutas.length} {sortedPermutas.length === 1 ? 'permuta' : 'permutas'} ordenadas da mais recente para a mais antiga
       </div>
     </div>
   );
