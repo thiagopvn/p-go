@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Função auxiliar para verificar se o usuário está autenticado via custom auth
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    // Função para verificar se é admin (seria usado com Firebase Auth)
+    function isAdmin() {
+      return isLoggedIn() && request.auth.token.admin == true;
+    }
+
+    // Regras para a collection 'militares'
+    match /militares/{document} {
+      // Qualquer pessoa pode LER para validar dados durante cadastro
+      allow read: if true;
+
+      // Apenas admins podem criar, atualizar ou deletar
+      allow write: if false; // Por enquanto, apenas via admin SDK
+    }
+
+    // Regras para a collection 'usuarios'
+    match /usuarios/{rg} {
+      // Qualquer pessoa pode LER seu próprio registro para fazer login
+      allow read: if true;
+
+      // Qualquer pessoa pode CRIAR um novo usuário (cadastro)
+      // mas apenas se o documento não existir ainda
+      allow create: if true;
+
+      // Usuário pode atualizar apenas seu próprio registro
+      allow update: if false; // Por enquanto, desabilitado
+
+      // Apenas admins podem deletar
+      allow delete: if false;
+    }
+
+    // Regras para a collection 'permutas'
+    match /permutas/{document} {
+      // Todos podem ler permutas
+      allow read: if true;
+
+      // Todos podem criar permutas
+      allow create: if true;
+
+      // Todos podem atualizar permutas
+      allow update: if true;
+
+      // Apenas admins podem deletar
+      allow delete: if false;
+    }
+
+    // Regra padrão - nega tudo que não foi explicitamente permitido
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
