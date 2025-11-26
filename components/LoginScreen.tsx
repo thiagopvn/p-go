@@ -21,9 +21,20 @@ export const LoginScreen: React.FC = () => {
       showFeedbackModal,
       feedbackIsSuccess,
       feedbackErrorMessage,
+      success,
+      error,
       timestamp: new Date().toISOString()
     });
-  }, [showFeedbackModal, feedbackIsSuccess, feedbackErrorMessage]);
+  }, [showFeedbackModal, feedbackIsSuccess, feedbackErrorMessage, success, error]);
+
+  // Garantir que o modal permaneça visível
+  useEffect(() => {
+    if (success && !showFeedbackModal) {
+      console.log('🔄 Reforçando abertura do modal de sucesso');
+      setShowFeedbackModal(true);
+      setFeedbackIsSuccess(true);
+    }
+  }, [success]);
 
   // Login form state
   const [loginRg, setLoginRg] = useState('');
@@ -108,17 +119,24 @@ export const LoginScreen: React.FC = () => {
       // Salvar RG antes de limpar o form
       const savedRg = cadastroData.rg;
 
-      // Reset form
-      setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
-
-      // Mostrar modal de sucesso
+      // Mostrar modal de sucesso IMEDIATAMENTE
       setSuccess('Cadastro realizado com sucesso! Agora você pode fazer login.');
-      setFeedbackIsSuccess(true);
-      setFeedbackErrorMessage('');
-      setShowFeedbackModal(true);
+      setError(''); // Limpar qualquer erro anterior
 
-      // Pre-fill login RG
-      setLoginRg(savedRg);
+      // Forçar o modal a permanecer aberto com setTimeout
+      setTimeout(() => {
+        setFeedbackIsSuccess(true);
+        setFeedbackErrorMessage('');
+        setShowFeedbackModal(true);
+        console.log('🟢 Modal forçado a abrir após timeout');
+      }, 100);
+
+      // Reset form após um pequeno delay para não interferir com o modal
+      setTimeout(() => {
+        setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
+        // Pre-fill login RG
+        setLoginRg(savedRg);
+      }, 500);
     } else {
       console.log('Erro no cadastro! Mostrando modal de erro...');
       console.log('🔴 ANTES de setar modal - showFeedbackModal:', showFeedbackModal);
