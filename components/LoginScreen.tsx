@@ -8,43 +8,9 @@ type ViewMode = 'login' | 'cadastro';
 export const LoginScreen: React.FC = () => {
   const { login, register, loading } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>('login');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackIsSuccess, setFeedbackIsSuccess] = useState(false);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState('');
-
-  // Debug do estado do modal
-  useEffect(() => {
-    console.log('🔍 DEBUG - Estado do modal mudou:', {
-      showFeedbackModal,
-      feedbackIsSuccess,
-      feedbackErrorMessage,
-      success,
-      error,
-      timestamp: new Date().toISOString()
-    });
-  }, [showFeedbackModal, feedbackIsSuccess, feedbackErrorMessage, success, error]);
-
-  // Garantir que o modal permaneça visível
-  useEffect(() => {
-    if (success && !showFeedbackModal) {
-      console.log('🔄 Reforçando abertura do modal de sucesso');
-      setShowFeedbackModal(true);
-      setFeedbackIsSuccess(true);
-    }
-  }, [success]);
-
-  // Garantir que o modal de erro apareça
-  useEffect(() => {
-    if (error && !showFeedbackModal && !success) {
-      console.log('🔄 Reforçando abertura do modal de erro');
-      setShowFeedbackModal(true);
-      setFeedbackIsSuccess(false);
-      setFeedbackErrorMessage(error);
-    }
-  }, [error]);
 
   // Login form state
   const [loginRg, setLoginRg] = useState('');
@@ -63,30 +29,31 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     if (!loginRg || !loginSenha) {
-      setError('Por favor, preencha todos os campos.');
+      // Mostrar modal de erro
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage('Por favor, preencha todos os campos.');
+      setShowFeedbackModal(true);
       return;
     }
 
     const result = await login(loginRg, loginSenha);
     if (!result.success) {
-      setError(result.error || 'Erro ao fazer login.');
+      // Mostrar modal de erro
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(result.error || 'Erro ao fazer login.');
+      setShowFeedbackModal(true);
     }
   };
 
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     // Validate all fields
     if (!cadastroData.rg || !cadastroData.grad || !cadastroData.quadro ||
         !cadastroData.nome || !cadastroData.unidade || !cadastroData.senha) {
       const errorMsg = 'Por favor, preencha todos os campos.';
-      setError(errorMsg);
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(errorMsg);
       setShowFeedbackModal(true);
@@ -96,7 +63,6 @@ export const LoginScreen: React.FC = () => {
     // Validate password confirmation
     if (cadastroData.senha !== cadastroData.confirmarSenha) {
       const errorMsg = 'As senhas não coincidem.';
-      setError(errorMsg);
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(errorMsg);
       setShowFeedbackModal(true);
@@ -106,7 +72,6 @@ export const LoginScreen: React.FC = () => {
     // Validate password length
     if (cadastroData.senha.length < 6) {
       const errorMsg = 'A senha deve ter pelo menos 6 caracteres.';
-      setError(errorMsg);
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(errorMsg);
       setShowFeedbackModal(true);
@@ -129,42 +94,24 @@ export const LoginScreen: React.FC = () => {
       // Salvar RG antes de limpar o form
       const savedRg = cadastroData.rg;
 
-      // Mostrar modal de sucesso IMEDIATAMENTE
-      setSuccess('Cadastro realizado com sucesso! Agora você pode fazer login.');
-      setError(''); // Limpar qualquer erro anterior
+      // Mostrar modal de sucesso
+      setFeedbackIsSuccess(true);
+      setFeedbackErrorMessage('');
+      setShowFeedbackModal(true);
 
-      // Forçar o modal a permanecer aberto com setTimeout
-      setTimeout(() => {
-        setFeedbackIsSuccess(true);
-        setFeedbackErrorMessage('');
-        setShowFeedbackModal(true);
-        console.log('🟢 Modal forçado a abrir após timeout');
-      }, 100);
-
-      // Reset form após um pequeno delay para não interferir com o modal
-      setTimeout(() => {
-        setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
-        // Pre-fill login RG
-        setLoginRg(savedRg);
-      }, 500);
+      // Reset form e pre-fill login RG
+      setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
+      setLoginRg(savedRg);
     } else {
       console.log('Erro no cadastro! Mostrando modal de erro...');
-      console.log('🔴 ANTES de setar modal - showFeedbackModal:', showFeedbackModal);
 
-      // Mostrar modal de erro IMEDIATAMENTE
-      setError(result.error || 'Erro ao cadastrar.');
-      setSuccess(''); // Limpar qualquer sucesso anterior
+      // Mostrar modal de erro
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
+      setShowFeedbackModal(true);
 
-      // Forçar o modal a permanecer aberto com setTimeout
-      setTimeout(() => {
-        setFeedbackIsSuccess(false);
-        setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
-        setShowFeedbackModal(true);
-        console.log('🔴 Modal de erro forçado a abrir após timeout');
-      }, 100);
-
-      // NÃO mudar de view - manter em cadastro
-      console.log('🔴 Mantendo na tela de cadastro');
+      // Manter na tela de cadastro
+      console.log('Mantendo na tela de cadastro');
     }
   };
 
@@ -246,16 +193,6 @@ export const LoginScreen: React.FC = () => {
                   disabled={loading}
                 />
               </div>
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
-                  {success}
-                </div>
-              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -393,17 +330,6 @@ export const LoginScreen: React.FC = () => {
                 />
               </div>
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
-                  {success}
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={loading}
@@ -427,57 +353,6 @@ export const LoginScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Error Modal for data mismatch */}
-      {showErrorModal && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-          <div className="relative mx-auto border-0 w-full max-w-lg shadow-2xl rounded-2xl bg-white animate-fadeIn">
-            <div className="p-8">
-              <div className="text-center">
-                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-                  <svg className="h-8 w-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Erro no Cadastro
-                </h3>
-                <div className="space-y-4 mb-6">
-                  <p className="text-gray-700 leading-relaxed">
-                    {error}
-                  </p>
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mt-4">
-                    <p className="text-sm font-semibold text-brand-blue-dark mb-2">
-                      Entre em contato com:
-                    </p>
-                    <p className="text-lg font-bold text-brand-blue-dark">
-                      TEN Thiago Santos
-                    </p>
-                    <p className="text-sm text-gray-600 mb-3">
-                      Desenvolvedor do Aplicativo
-                    </p>
-                    <a
-                      href="tel:+5521967586628"
-                      className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-sm"
-                    >
-                      <svg className="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      (21) 96758-6628
-                    </a>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowErrorModal(false)}
-                  className="w-full px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-all duration-200 shadow-sm"
-                >
-                  Fechar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-white py-2 px-4 flex items-center justify-center z-40 border-t border-gray-200">
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -499,61 +374,7 @@ export const LoginScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal de Erro/Sucesso Simples e Direto */}
-      {(error || success) && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-[99999] flex items-center justify-center p-4">
-          <div className="relative mx-auto border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white">
-            <div className="p-8">
-              <div className="text-center">
-                {/* Ícone */}
-                <div className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 ${
-                  success ? 'bg-green-100' : 'bg-red-100'
-                }`}>
-                  {success ? (
-                    <svg className="h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <svg className="h-8 w-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  )}
-                </div>
-
-                {/* Título */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  {success ? 'Cadastro Realizado!' : 'Erro no Cadastro'}
-                </h3>
-
-                {/* Mensagem */}
-                <p className="text-gray-700 mb-6">
-                  {success || error}
-                </p>
-
-                {/* Botão */}
-                <button
-                  onClick={() => {
-                    setError('');
-                    setSuccess('');
-                    if (success) {
-                      setViewMode('login');
-                    }
-                  }}
-                  className={`w-full px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-sm ${
-                    success
-                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                      : 'bg-red-600 hover:bg-red-700 text-white'
-                  }`}
-                >
-                  {success ? 'Ir para Login' : 'Tentar Novamente'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Feedback do Cadastro - Mantido como backup */}
+      {/* Modal de Feedback do Cadastro - ÚNICO MODAL */}
       {console.log('🎯 RENDERIZANDO CadastroFeedbackModal com props:', {
         isOpen: showFeedbackModal,
         isSuccess: feedbackIsSuccess,
@@ -570,9 +391,6 @@ export const LoginScreen: React.FC = () => {
             setViewMode('login');
             // RG já foi preenchido anteriormente
           }
-          // Limpar mensagens
-          setError('');
-          setSuccess('');
         }}
       />
     </>
