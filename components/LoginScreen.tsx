@@ -36,6 +36,16 @@ export const LoginScreen: React.FC = () => {
     }
   }, [success]);
 
+  // Garantir que o modal de erro apareça
+  useEffect(() => {
+    if (error && !showFeedbackModal && !success) {
+      console.log('🔄 Reforçando abertura do modal de erro');
+      setShowFeedbackModal(true);
+      setFeedbackIsSuccess(false);
+      setFeedbackErrorMessage(error);
+    }
+  }, [error]);
+
   // Login form state
   const [loginRg, setLoginRg] = useState('');
   const [loginSenha, setLoginSenha] = useState('');
@@ -140,13 +150,21 @@ export const LoginScreen: React.FC = () => {
     } else {
       console.log('Erro no cadastro! Mostrando modal de erro...');
       console.log('🔴 ANTES de setar modal - showFeedbackModal:', showFeedbackModal);
-      // Mostrar modal de erro
-      setFeedbackIsSuccess(false);
-      setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
-      console.log('🔴 Chamando setShowFeedbackModal(true)...');
-      setShowFeedbackModal(true);
-      console.log('🔴 DEPOIS de setar modal - showFeedbackModal ainda é:', showFeedbackModal, '(valor antigo, novo valor estará no próximo render)');
+
+      // Mostrar modal de erro IMEDIATAMENTE
       setError(result.error || 'Erro ao cadastrar.');
+      setSuccess(''); // Limpar qualquer sucesso anterior
+
+      // Forçar o modal a permanecer aberto com setTimeout
+      setTimeout(() => {
+        setFeedbackIsSuccess(false);
+        setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
+        setShowFeedbackModal(true);
+        console.log('🔴 Modal de erro forçado a abrir após timeout');
+      }, 100);
+
+      // NÃO mudar de view - manter em cadastro
+      console.log('🔴 Mantendo na tela de cadastro');
     }
   };
 
