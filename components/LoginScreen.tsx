@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { GRADUACOES, QUADROS, UNIDADES } from '../constants';
 import { CadastroFeedbackModal } from './CadastroFeedbackModal';
@@ -14,6 +14,16 @@ export const LoginScreen: React.FC = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackIsSuccess, setFeedbackIsSuccess] = useState(false);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState('');
+
+  // Debug do estado do modal
+  useEffect(() => {
+    console.log('🔍 DEBUG - Estado do modal mudou:', {
+      showFeedbackModal,
+      feedbackIsSuccess,
+      feedbackErrorMessage,
+      timestamp: new Date().toISOString()
+    });
+  }, [showFeedbackModal, feedbackIsSuccess, feedbackErrorMessage]);
 
   // Login form state
   const [loginRg, setLoginRg] = useState('');
@@ -102,6 +112,7 @@ export const LoginScreen: React.FC = () => {
       setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
 
       // Mostrar modal de sucesso
+      setSuccess('Cadastro realizado com sucesso! Agora você pode fazer login.');
       setFeedbackIsSuccess(true);
       setFeedbackErrorMessage('');
       setShowFeedbackModal(true);
@@ -110,10 +121,13 @@ export const LoginScreen: React.FC = () => {
       setLoginRg(savedRg);
     } else {
       console.log('Erro no cadastro! Mostrando modal de erro...');
+      console.log('🔴 ANTES de setar modal - showFeedbackModal:', showFeedbackModal);
       // Mostrar modal de erro
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
+      console.log('🔴 Chamando setShowFeedbackModal(true)...');
       setShowFeedbackModal(true);
+      console.log('🔴 DEPOIS de setar modal - showFeedbackModal ainda é:', showFeedbackModal, '(valor antigo, novo valor estará no próximo render)');
       setError(result.error || 'Erro ao cadastrar.');
     }
   };
@@ -449,7 +463,66 @@ export const LoginScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal de Feedback do Cadastro - Renderizado por último para garantir que fique acima de tudo */}
+      {/* Modal de Erro/Sucesso Simples e Direto */}
+      {(error || success) && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-[99999] flex items-center justify-center p-4">
+          <div className="relative mx-auto border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white">
+            <div className="p-8">
+              <div className="text-center">
+                {/* Ícone */}
+                <div className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 ${
+                  success ? 'bg-green-100' : 'bg-red-100'
+                }`}>
+                  {success ? (
+                    <svg className="h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="h-8 w-8 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  )}
+                </div>
+
+                {/* Título */}
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  {success ? 'Cadastro Realizado!' : 'Erro no Cadastro'}
+                </h3>
+
+                {/* Mensagem */}
+                <p className="text-gray-700 mb-6">
+                  {success || error}
+                </p>
+
+                {/* Botão */}
+                <button
+                  onClick={() => {
+                    setError('');
+                    setSuccess('');
+                    if (success) {
+                      setViewMode('login');
+                    }
+                  }}
+                  className={`w-full px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-sm ${
+                    success
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  }`}
+                >
+                  {success ? 'Ir para Login' : 'Tentar Novamente'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Feedback do Cadastro - Mantido como backup */}
+      {console.log('🎯 RENDERIZANDO CadastroFeedbackModal com props:', {
+        isOpen: showFeedbackModal,
+        isSuccess: feedbackIsSuccess,
+        errorMessage: feedbackErrorMessage
+      })}
       <CadastroFeedbackModal
         isOpen={showFeedbackModal}
         isSuccess={feedbackIsSuccess}
