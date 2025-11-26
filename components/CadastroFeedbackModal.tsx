@@ -23,7 +23,7 @@ export const CadastroFeedbackModal: React.FC<CadastroFeedbackModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-[9999] flex items-center justify-center p-4">
       <div className="relative mx-auto border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white">
         <div className="p-8">
           <div className="text-center">

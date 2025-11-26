@@ -377,24 +377,6 @@ export const LoginScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal de Feedback do Cadastro */}
-      <CadastroFeedbackModal
-        isOpen={showFeedbackModal}
-        isSuccess={feedbackIsSuccess}
-        errorMessage={feedbackErrorMessage}
-        onClose={() => {
-          setShowFeedbackModal(false);
-          if (feedbackIsSuccess) {
-            // Se sucesso, vai para login
-            setViewMode('login');
-            // RG já foi preenchido anteriormente
-          }
-          // Limpar mensagens
-          setError('');
-          setSuccess('');
-        }}
-      />
-
       {/* Error Modal for data mismatch */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
@@ -466,6 +448,24 @@ export const LoginScreen: React.FC = () => {
           </a>
         </div>
       </div>
+
+      {/* Modal de Feedback do Cadastro - Renderizado por último para garantir que fique acima de tudo */}
+      <CadastroFeedbackModal
+        isOpen={showFeedbackModal}
+        isSuccess={feedbackIsSuccess}
+        errorMessage={feedbackErrorMessage}
+        onClose={() => {
+          setShowFeedbackModal(false);
+          if (feedbackIsSuccess) {
+            // Se sucesso, vai para login
+            setViewMode('login');
+            // RG já foi preenchido anteriormente
+          }
+          // Limpar mensagens
+          setError('');
+          setSuccess('');
+        }}
+      />
     </>
   );
 };
