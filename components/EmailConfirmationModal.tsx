@@ -43,157 +43,90 @@ export const EmailConfirmationModal: React.FC<EmailConfirmationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-[60] flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto animate-fadeIn">
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-xl my-2 sm:my-4">
-        {/* Header - Compacto no mobile */}
-        <div className="bg-gradient-to-r from-brand-blue via-brand-blue-light to-brand-accent p-3 sm:p-6 text-white sticky top-0 z-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="bg-white bg-opacity-20 rounded-full p-2 sm:p-3">
-                <svg className="h-5 w-5 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-2xl font-bold">Receber por E-mail</h2>
-                <p className="text-xs sm:text-sm text-blue-100 hidden sm:block">Confirmação da permuta de serviço</p>
-              </div>
-            </div>
-            {/* Botão X para fechar no mobile */}
-            <button
-              type="button"
-              onClick={handleDecline}
-              className="sm:hidden bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-2 transition-all"
-              disabled={isLoading}
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+    <div
+      className="fixed inset-0 bg-gray-900 bg-opacity-75 z-[60] flex items-center justify-center p-2 sm:p-4"
+      onClick={handleDecline}
+    >
+      <div
+        className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header com botão X */}
+        <div className="bg-gradient-to-r from-brand-blue to-brand-accent p-3 sm:p-4 text-white rounded-t-xl sm:rounded-t-2xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <h2 className="text-base sm:text-lg font-bold">Receber por E-mail?</h2>
           </div>
+          <button
+            type="button"
+            onClick={handleDecline}
+            className="bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full p-1.5 transition-all"
+            disabled={isLoading}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        {/* Body - Responsivo */}
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
-          {/* Pergunta Principal - Compacta no mobile */}
-          <div className="text-center py-2 sm:py-4">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-brand-blue to-brand-accent mb-3 sm:mb-4">
-              <svg className="h-6 w-6 sm:h-9 sm:w-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-              Deseja receber por e-mail?
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600">
-              Receba uma cópia da confirmação
-            </p>
-          </div>
-
-          {/* Observação Jurídica - Menor no mobile */}
-          <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-500 rounded-lg p-3 sm:p-5 shadow-sm">
-            <div className="flex items-start gap-2 sm:gap-3">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-xs sm:text-sm font-semibold text-amber-900 mb-1">Observação</p>
-                <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
-                  <span className="hidden sm:inline">Conforme entendimento do STJ, o e-mail é considerado documento válido para instruir ação judicial (REsp 1.381.603/MS).</span>
-                  <span className="sm:hidden">E-mail é documento válido conforme STJ.</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
+        {/* Body - Super compacto */}
+        <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
           {/* Campo de Email */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
-              Digite seu e-mail
+          <div>
+            <label htmlFor="email" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">
+              Digite seu e-mail para receber a confirmação:
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-4 pointer-events-none">
-                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                </svg>
-              </div>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError('');
-                }}
-                placeholder="seu.email@exemplo.com"
-                className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all text-gray-900 placeholder-gray-400 text-sm sm:text-base"
-                disabled={isLoading}
-                autoFocus
-              />
-            </div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError('');
+              }}
+              placeholder="seu.email@exemplo.com"
+              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue text-sm"
+              disabled={isLoading}
+            />
             {error && (
-              <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm bg-red-50 border border-red-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
-                <svg className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <span>{error}</span>
-              </div>
+              <p className="text-red-600 text-xs mt-1">{error}</p>
             )}
           </div>
 
-          {/* Detalhes Resumidos da Permuta */}
-          <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-200">
-            <h4 className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 sm:mb-3">
-              Resumo da Permuta
-            </h4>
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
-              <div>
-                <span className="text-gray-600">Data:</span>
-                <span className="ml-1 sm:ml-2 font-semibold text-gray-900">
-                  {new Date(permuta.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
-                </span>
-              </div>
-              <div>
-                <span className="text-gray-600">Função:</span>
-                <span className="ml-1 sm:ml-2 font-semibold text-gray-900">{permuta.funcao}</span>
-              </div>
-            </div>
+          {/* Resumo compacto */}
+          <div className="bg-gray-50 rounded-lg p-2 text-xs flex justify-between">
+            <span><strong>Data:</strong> {new Date(permuta.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
+            <span><strong>Função:</strong> {permuta.funcao}</span>
           </div>
 
-          {/* Botões - Responsivos */}
-          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2 pb-2">
+          {/* Botões */}
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={handleDecline}
-              className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg border-2 border-gray-300 transition-all duration-200 hover:border-gray-400 text-sm sm:text-base active:scale-[0.98]"
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2.5 px-3 rounded-lg text-sm active:scale-[0.98]"
               disabled={isLoading}
             >
-              Não, obrigado
+              Não
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 bg-gradient-to-r from-brand-blue to-brand-blue-light hover:from-brand-blue-dark hover:to-brand-blue text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base active:scale-[0.98]"
+              className="flex-1 bg-brand-blue hover:bg-brand-blue-dark text-white font-bold py-2.5 px-3 rounded-lg text-sm disabled:opacity-50 flex items-center justify-center gap-1 active:scale-[0.98]"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Enviando...</span>
+                  Enviando...
                 </>
               ) : (
-                <>
-                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="hidden sm:inline">Sim, enviar por e-mail</span>
-                  <span className="sm:hidden">Enviar</span>
-                </>
+                'Sim, Enviar'
               )}
             </button>
           </div>
