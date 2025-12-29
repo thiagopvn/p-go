@@ -179,7 +179,7 @@ const MilitarInputGroup: React.FC<MilitarInputGroupProps> = ({
                         type="text"
                         value={militar?.quadro || ''}
                         onChange={(e) => handleFieldChange('quadro', e.target.value)}
-                        placeholder="Ex: QPCGC"
+                        placeholder="Ex: QOC/QOA"
                         className={`mt-1 block w-full rounded-lg border-2 shadow-sm px-4 py-2.5 text-base transition-all duration-200 ${
                             isManualEntry
                                 ? 'border-yellow-400 bg-yellow-50 hover:border-yellow-500 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200'

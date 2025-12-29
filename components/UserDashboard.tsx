@@ -63,132 +63,152 @@ export const UserDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto">
-      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h1 className="text-3xl font-bold text-brand-blue-dark">Bem-vindo, {currentUser.grad} {currentUser.nome}</h1>
-        <p className="text-brand-text-light mt-1">Aqui você pode visualizar e solicitar suas permutas de serviço.</p>
+    <div className="container mx-auto px-3 sm:px-4">
+      {/* Welcome Card - Responsive */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6 md:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-blue-dark">
+          Bem-vindo, {currentUser.grad} {currentUser.nome}
+        </h1>
+        <p className="text-brand-text-light mt-1 text-sm sm:text-base">
+          Visualize e solicite suas permutas de serviço.
+        </p>
       </div>
 
-      {/* Seção de Permutas Aguardando Confirmação */}
+      {/* Seção de Permutas Aguardando Confirmação - Mobile First */}
       {permutasAguardandoConfirmacao.length > 0 && (
-        <section className="mb-8">
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 bg-yellow-400 rounded-full p-3">
-                <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+        <section className="mb-4 sm:mb-6 md:mb-8">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-xl p-3 sm:p-4 md:p-6 shadow-lg">
+            {/* Header da seção - Stack no mobile */}
+            <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 mb-4">
+              <div className="flex items-center gap-3 sm:block">
+                <div className="flex-shrink-0 bg-yellow-400 rounded-full p-2 sm:p-3">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-900 sm:hidden">
+                  Assinatura Pendente
+                </h2>
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-yellow-900 mb-2">
+                <h2 className="hidden sm:block text-xl md:text-2xl font-bold text-yellow-900 mb-1 sm:mb-2">
                   Assinatura Eletrônica Pendente
                 </h2>
-                <p className="text-yellow-800 mb-4">
-                  Você possui <strong>{permutasAguardandoConfirmacao.length}</strong> {permutasAguardandoConfirmacao.length === 1 ? 'permuta aguardando' : 'permutas aguardando'} sua confirmação.
-                  É necessário assinar eletronicamente para validar a solicitação.
+                <p className="text-yellow-800 text-sm sm:text-base">
+                  <strong>{permutasAguardandoConfirmacao.length}</strong> {permutasAguardandoConfirmacao.length === 1 ? 'permuta aguardando' : 'permutas aguardando'} sua confirmação.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {permutasAguardandoConfirmacao.map(permuta => (
-                    <div
-                      key={permuta.id}
-                      className="bg-white rounded-lg p-4 shadow-md border-2 border-yellow-300 hover:shadow-lg transition-all cursor-pointer"
-                      onClick={() => handleConfirmarClick(permuta)}
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <p className="text-sm font-bold text-brand-blue">{permuta.funcao}</p>
-                          <p className="text-lg font-bold text-gray-900">
-                            {new Date(permuta.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
-                          </p>
-                        </div>
-                        <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-                          Pendente
-                        </span>
-                      </div>
-                      <div className="space-y-2 text-sm mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-600 font-semibold">ENTRA:</span>
-                          <span className="text-gray-800 truncate">{permuta.militarEntra.nome}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-red-600 font-semibold">SAI:</span>
-                          <span className="text-gray-800 truncate">{permuta.militarSai.nome}</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleConfirmarClick(permuta);
-                        }}
-                        className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-2 px-4 rounded-lg shadow transition-all flex items-center justify-center gap-2"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Assinar Eletronicamente
-                      </button>
-                    </div>
-                  ))}
-                </div>
               </div>
+            </div>
+
+            {/* Cards de permutas pendentes - Responsivo */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {permutasAguardandoConfirmacao.map(permuta => (
+                <div
+                  key={permuta.id}
+                  className="bg-white rounded-lg p-3 sm:p-4 shadow-md border-2 border-yellow-300 hover:shadow-lg transition-all cursor-pointer active:scale-[0.98]"
+                  onClick={() => handleConfirmarClick(permuta)}
+                >
+                  <div className="flex justify-between items-start mb-2 sm:mb-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs sm:text-sm font-bold text-brand-blue truncate">{permuta.funcao}</p>
+                      <p className="text-base sm:text-lg font-bold text-gray-900">
+                        {new Date(permuta.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
+                      </p>
+                    </div>
+                    <span className="bg-yellow-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full animate-pulse flex-shrink-0 ml-2">
+                      Pendente
+                    </span>
+                  </div>
+                  <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm mb-2 sm:mb-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="text-green-600 font-semibold flex-shrink-0">ENTRA:</span>
+                      <span className="text-gray-800 truncate">{permuta.militarEntra.nome}</span>
+                    </div>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="text-red-600 font-semibold flex-shrink-0">SAI:</span>
+                      <span className="text-gray-800 truncate">{permuta.militarSai.nome}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleConfirmarClick(permuta);
+                    }}
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-2 px-3 sm:px-4 rounded-lg shadow transition-all flex items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base active:scale-[0.98]"
+                  >
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="hidden sm:inline">Assinar Eletronicamente</span>
+                    <span className="sm:hidden">Assinar</span>
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
 
       <section>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-brand-text">
+        {/* Header da seção - Stack no mobile */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4 mb-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-brand-text">
             Minhas Solicitações
           </h2>
-          <div className="flex gap-2">
+
+          {/* Botões - Responsivos */}
+          <div className="flex flex-wrap gap-2">
             {minhasPermutas.length > 0 && (
               <>
                 <button
                   onClick={handleSelectAll}
-                  className="flex items-center justify-center bg-gray-500 hover:bg-gray-600 transition-colors duration-200 text-white font-bold py-2 px-4 rounded-lg shadow-sm"
+                  className="flex-1 sm:flex-none flex items-center justify-center bg-gray-500 hover:bg-gray-600 transition-colors duration-200 text-white font-bold py-2 px-3 sm:px-4 rounded-lg shadow-sm text-xs sm:text-sm active:scale-[0.98]"
                 >
-                  {selectedPermutaIds.size === minhasPermutas.length ? 'Desmarcar Todas' : 'Selecionar Todas'}
+                  <span className="hidden sm:inline">{selectedPermutaIds.size === minhasPermutas.length ? 'Desmarcar Todas' : 'Selecionar Todas'}</span>
+                  <span className="sm:hidden">{selectedPermutaIds.size === minhasPermutas.length ? 'Desmarcar' : 'Selecionar'}</span>
                 </button>
                 {selectedPermutaIds.size > 0 && (
                   <button
                     onClick={handleGenerateBatchDocument}
-                    className="flex items-center justify-center bg-green-600 hover:bg-green-700 transition-colors duration-200 text-white font-bold py-2 px-4 rounded-lg shadow-sm"
+                    className="flex-1 sm:flex-none flex items-center justify-center bg-green-600 hover:bg-green-700 transition-colors duration-200 text-white font-bold py-2 px-3 sm:px-4 rounded-lg shadow-sm text-xs sm:text-sm active:scale-[0.98]"
                   >
-                    <FileTextIcon className="h-5 w-5 mr-2"/>
-                    <span>Gerar Documento ({selectedPermutaIds.size})</span>
+                    <FileTextIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2"/>
+                    <span className="hidden sm:inline">Gerar Documento ({selectedPermutaIds.size})</span>
+                    <span className="sm:hidden">Doc ({selectedPermutaIds.size})</span>
                   </button>
                 )}
               </>
             )}
             <button
               onClick={() => openModal('requestPermuta')}
-              className="flex items-center justify-center bg-brand-accent hover:bg-blue-500 transition-colors duration-200 text-white font-bold py-2 px-4 rounded-lg shadow-sm"
+              className="flex-1 sm:flex-none flex items-center justify-center bg-brand-accent hover:bg-blue-500 transition-colors duration-200 text-white font-bold py-2 px-3 sm:px-4 rounded-lg shadow-sm text-xs sm:text-sm active:scale-[0.98]"
             >
-              <PlusIcon className="h-5 w-5 mr-2"/>
-              <span>Solicitar Permuta</span>
+              <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2"/>
+              <span className="hidden sm:inline">Solicitar Permuta</span>
+              <span className="sm:hidden">Nova Permuta</span>
             </button>
           </div>
         </div>
 
+        {/* Grid de cards - Responsivo */}
         {minhasPermutas.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {minhasPermutas.map(permuta => (
               <div key={permuta.id} className="relative">
                 <input
                   type="checkbox"
                   checked={selectedPermutaIds.has(permuta.id)}
                   onChange={() => handleTogglePermuta(permuta.id)}
-                  className="absolute top-2 left-2 z-10 w-5 h-5 cursor-pointer"
+                  className="absolute top-2 left-2 z-10 w-4 h-4 sm:w-5 sm:h-5 cursor-pointer accent-brand-blue"
                 />
                 <PermutaCard permuta={permuta} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-lg shadow">
-            <h3 className="text-xl font-semibold text-brand-text">Nenhuma solicitação encontrada.</h3>
-            <p className="text-brand-text-light mt-2">Clique em "Solicitar Permuta" para criar uma nova solicitação.</p>
+          <div className="text-center py-10 sm:py-16 bg-white rounded-lg shadow px-4">
+            <h3 className="text-base sm:text-lg md:text-xl font-semibold text-brand-text">Nenhuma solicitação encontrada.</h3>
+            <p className="text-brand-text-light mt-2 text-sm sm:text-base">Clique em "Nova Permuta" para criar uma solicitação.</p>
           </div>
         )}
       </section>
