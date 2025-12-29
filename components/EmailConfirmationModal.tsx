@@ -43,8 +43,8 @@ export const EmailConfirmationModal: React.FC<EmailConfirmationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-[60] flex items-center justify-center p-2 sm:p-4 animate-fadeIn">
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-xl max-h-[95vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 z-[60] flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto animate-fadeIn">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-xl my-2 sm:my-4">
         {/* Header - Compacto no mobile */}
         <div className="bg-gradient-to-r from-brand-blue via-brand-blue-light to-brand-accent p-3 sm:p-6 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
