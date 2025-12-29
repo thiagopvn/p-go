@@ -47,6 +47,9 @@ export interface PermutaFirestore {
   funcao: Funcao;
   militarEntraRg: string; // Only RG reference
   militarSaiRg: string; // Only RG reference
+  // Full militar data stored for manual entries (fallback when RG not in militares collection)
+  militarEntraData?: Omit<Militar, 'senha' | 'role'>; // Full data for militarEntra
+  militarSaiData?: Omit<Militar, 'senha' | 'role'>; // Full data for militarSai
   status: 'Pendente' | 'Aprovada' | 'Rejeitada';
   enviada: boolean; // Whether document was generated and sent to ajudância
   dataEnvio?: string; // When the document was sent (ISO string)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { GRADUACOES, QUADROS, UNIDADES } from '../constants';
 import { CadastroFeedbackModal } from './CadastroFeedbackModal';
@@ -133,9 +133,7 @@ export const LoginScreen: React.FC = () => {
             <button
               onClick={() => {
                 setViewMode('login');
-                setError('');
-                setSuccess('');
-                setShowErrorModal(false);
+                setShowFeedbackModal(false);
               }}
               className={`flex-1 py-2 px-4 text-center font-medium transition-all duration-200 ${
                 viewMode === 'login'
@@ -148,9 +146,7 @@ export const LoginScreen: React.FC = () => {
             <button
               onClick={() => {
                 setViewMode('cadastro');
-                setError('');
-                setSuccess('');
-                setShowErrorModal(false);
+                setShowFeedbackModal(false);
               }}
               className={`flex-1 py-2 px-4 text-center font-medium transition-all duration-200 ${
                 viewMode === 'cadastro'
@@ -374,12 +370,7 @@ export const LoginScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal de Feedback do Cadastro - ÚNICO MODAL */}
-      {console.log('🎯 RENDERIZANDO CadastroFeedbackModal com props:', {
-        isOpen: showFeedbackModal,
-        isSuccess: feedbackIsSuccess,
-        errorMessage: feedbackErrorMessage
-      })}
+      {/* Modal de Feedback do Cadastro */}
       <CadastroFeedbackModal
         isOpen={showFeedbackModal}
         isSuccess={feedbackIsSuccess}

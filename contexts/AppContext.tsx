@@ -74,10 +74,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const data = doc.data() as PermutaFirestore;
 
           // Convert Firestore data to UI data by resolving militar references
-          const militarEntra = militarMap.get(data.militarEntraRg);
-          const militarSai = militarMap.get(data.militarSaiRg);
+          // Use fallback data if RG not found in militares collection (manual entry)
+          let militarEntra = militarMap.get(data.militarEntraRg);
+          let militarSai = militarMap.get(data.militarSaiRg);
 
-          // Only include permuta if both militares are found
+          // Use stored fallback data if lookup fails
+          if (!militarEntra && data.militarEntraData) {
+            militarEntra = data.militarEntraData as Militar;
+          }
+          if (!militarSai && data.militarSaiData) {
+            militarSai = data.militarSaiData as Militar;
+          }
+
+          // Only include permuta if both militares are found (from lookup or fallback)
           if (militarEntra && militarSai) {
             return {
               id: data.id,
@@ -144,6 +153,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           funcao: p.funcao,
           militarEntraRg: p.militarEntra.rg,
           militarSaiRg: p.militarSai.rg,
+          // Store full militar data for fallback (in case RG not in militares collection)
+          militarEntraData: {
+            rg: p.militarEntra.rg,
+            nome: p.militarEntra.nome,
+            grad: p.militarEntra.grad,
+            quadro: p.militarEntra.quadro,
+            unidade: p.militarEntra.unidade
+          },
+          militarSaiData: {
+            rg: p.militarSai.rg,
+            nome: p.militarSai.nome,
+            grad: p.militarSai.grad,
+            quadro: p.militarSai.quadro,
+            unidade: p.militarSai.unidade
+          },
           status: 'Pendente',
           enviada: false,
           arquivada: false,

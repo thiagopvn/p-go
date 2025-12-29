@@ -47,6 +47,7 @@ const MilitarInputGroup: React.FC<MilitarInputGroupProps> = ({
         if (isRgReadOnly) return;
         if (!rg) {
             setRgStatus('idle');
+            onMilitarChange(null);
             return;
         }
         const foundMilitar = findMilitarByRg(rg);
@@ -54,16 +55,35 @@ const MilitarInputGroup: React.FC<MilitarInputGroupProps> = ({
             setRgStatus('found');
             onMilitarChange(foundMilitar);
         } else {
+            // RG not found - create empty militar object for manual entry
             setRgStatus('not-found');
-            onMilitarChange(null);
+            onMilitarChange({
+                rg: rg,
+                nome: '',
+                grad: '',
+                quadro: '',
+                unidade: ''
+            });
         }
     };
 
     const handleFieldChange = (field: keyof Militar, value: string) => {
         if (militar) {
             onMilitarChange({ ...militar, [field]: value });
+        } else {
+            // Create new militar object if none exists
+            onMilitarChange({
+                rg: rg,
+                nome: field === 'nome' ? value : '',
+                grad: field === 'grad' ? value : '',
+                quadro: field === 'quadro' ? value : '',
+                unidade: field === 'unidade' ? value : ''
+            });
         }
     };
+
+    // Check if fields should be editable (not found in database)
+    const isManualEntry = rgStatus === 'not-found';
 
     const bgColor = type === 'entra' ? 'bg-section-enter' : 'bg-section-exit';
     const borderColor = type === 'entra' ? 'border-section-enter-border' : 'border-section-exit-border';
@@ -118,44 +138,71 @@ const MilitarInputGroup: React.FC<MilitarInputGroupProps> = ({
                     )}
                 </div>
                 <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-800 mb-1">Nome de guerra</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1">
+                        Nome de guerra {isManualEntry && <span className="text-red-500">*</span>}
+                    </label>
                     <input
                         type="text"
                         value={militar?.nome || ''}
                         onChange={(e) => handleFieldChange('nome', e.target.value)}
-                        placeholder="Preenchido automaticamente"
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-200 shadow-sm px-4 py-2.5 text-base bg-gray-50 font-medium"
-                        readOnly
+                        placeholder={isManualEntry ? "Digite o nome de guerra" : "Preenchido automaticamente"}
+                        className={`mt-1 block w-full rounded-lg border-2 shadow-sm px-4 py-2.5 text-base font-medium transition-all duration-200 ${
+                            isManualEntry
+                                ? 'border-yellow-400 bg-yellow-50 hover:border-yellow-500 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200'
+                                : 'border-gray-200 bg-gray-50'
+                        }`}
+                        readOnly={!isManualEntry}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1">Posto/Graduação</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1">
+                        Posto/Graduação {isManualEntry && <span className="text-red-500">*</span>}
+                    </label>
                     <input
                         type="text"
                         value={militar?.grad || ''}
                         onChange={(e) => handleFieldChange('grad', e.target.value)}
                         placeholder="Ex: Sd"
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm px-4 py-2.5 text-base hover:border-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-accent transition-all duration-200"
+                        className={`mt-1 block w-full rounded-lg border-2 shadow-sm px-4 py-2.5 text-base transition-all duration-200 ${
+                            isManualEntry
+                                ? 'border-yellow-400 bg-yellow-50 hover:border-yellow-500 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200'
+                                : 'border-gray-200 bg-gray-50'
+                        }`}
+                        readOnly={!isManualEntry}
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-1">Quadro</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1">
+                        Quadro {isManualEntry && <span className="text-red-500">*</span>}
+                    </label>
                     <input
                         type="text"
                         value={militar?.quadro || ''}
                         onChange={(e) => handleFieldChange('quadro', e.target.value)}
                         placeholder="Ex: QPCGC"
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm px-4 py-2.5 text-base hover:border-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-accent transition-all duration-200"
+                        className={`mt-1 block w-full rounded-lg border-2 shadow-sm px-4 py-2.5 text-base transition-all duration-200 ${
+                            isManualEntry
+                                ? 'border-yellow-400 bg-yellow-50 hover:border-yellow-500 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200'
+                                : 'border-gray-200 bg-gray-50'
+                        }`}
+                        readOnly={!isManualEntry}
                     />
                 </div>
                 <div className="sm:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-800 mb-1">Unidade</label>
+                    <label className="block text-sm font-semibold text-gray-800 mb-1">
+                        Unidade {isManualEntry && <span className="text-red-500">*</span>}
+                    </label>
                     <input
                         type="text"
                         value={militar?.unidade || ''}
                         onChange={(e) => handleFieldChange('unidade', e.target.value)}
                         placeholder="Ex: GOCG"
-                        className="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm px-4 py-2.5 text-base hover:border-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-accent transition-all duration-200"
+                        className={`mt-1 block w-full rounded-lg border-2 shadow-sm px-4 py-2.5 text-base transition-all duration-200 ${
+                            isManualEntry
+                                ? 'border-yellow-400 bg-yellow-50 hover:border-yellow-500 focus:border-yellow-600 focus:ring-2 focus:ring-yellow-200'
+                                : 'border-gray-200 bg-gray-50'
+                        }`}
+                        readOnly={!isManualEntry}
                     />
                 </div>
             </div>
@@ -201,6 +248,11 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
     return !!(row.data && row.funcao && row.militarEntra && row.militarSai);
   };
 
+  const isMilitarComplete = (m: Militar | null): boolean => {
+    if (!m) return false;
+    return !!(m.rg && m.nome && m.grad && m.quadro && m.unidade);
+  };
+
   const handleSubmit = async () => {
     setError(null);
     const novasPermutas: Omit<Permuta, 'id' | 'status'>[] = [];
@@ -214,8 +266,16 @@ export const PermutaRequestModal: React.FC<{ onClose: () => void }> = ({ onClose
             setError('⚠️ Por favor, preencha o RG do militar que ENTRA no serviço.');
             return;
         }
+        if (!isMilitarComplete(row.militarEntra)) {
+            setError('⚠️ Por favor, preencha todos os dados do militar que ENTRA (nome, posto, quadro e unidade).');
+            return;
+        }
         if (!row.militarSai) {
             setError('⚠️ Por favor, preencha o RG do militar que SAI do serviço.');
+            return;
+        }
+        if (!isMilitarComplete(row.militarSai)) {
+            setError('⚠️ Por favor, preencha todos os dados do militar que SAI (nome, posto, quadro e unidade).');
             return;
         }
         novasPermutas.push({
