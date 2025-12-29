@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
         <span className="text-white text-[10px] sm:text-xs text-center">
           <span className="hidden sm:inline">👤 Aplicativo desenvolvido pelo </span>
-          <span className="sm:hidden">Por </span>
+          <span className="sm:hidden">Desenvolvido por </span>
           2º Ten Thiago Santos
         </span>
         <span className="text-white hidden sm:inline">|</span>
