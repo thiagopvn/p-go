@@ -11,6 +11,7 @@ export const LoginScreen: React.FC = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackIsSuccess, setFeedbackIsSuccess] = useState(false);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Login form state
   const [loginRg, setLoginRg] = useState('');
@@ -78,6 +79,8 @@ export const LoginScreen: React.FC = () => {
       return;
     }
 
+    setIsRegistering(true);
+
     const result = await register({
       rg: cadastroData.rg,
       senha: cadastroData.senha,
@@ -87,10 +90,9 @@ export const LoginScreen: React.FC = () => {
       unidade: cadastroData.unidade
     });
 
-    console.log('Resultado do cadastro:', result);
+    setIsRegistering(false);
 
     if (result.success) {
-      console.log('Cadastro com sucesso! Mostrando modal...');
       // Salvar RG antes de limpar o form
       const savedRg = cadastroData.rg;
 
@@ -103,15 +105,10 @@ export const LoginScreen: React.FC = () => {
       setCadastroData({ rg: '', grad: '', quadro: '', nome: '', unidade: '', senha: '', confirmarSenha: '' });
       setLoginRg(savedRg);
     } else {
-      console.log('Erro no cadastro! Mostrando modal de erro...');
-
       // Mostrar modal de erro
       setFeedbackIsSuccess(false);
       setFeedbackErrorMessage(result.error || 'Erro ao cadastrar.');
       setShowFeedbackModal(true);
-
-      // Manter na tela de cadastro
-      console.log('Mantendo na tela de cadastro');
     }
   };
 
@@ -223,7 +220,7 @@ export const LoginScreen: React.FC = () => {
                   onChange={(e) => setCadastroData({ ...cadastroData, rg: e.target.value })}
                   placeholder="Digite seu RG"
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 />
               </div>
 
@@ -238,7 +235,7 @@ export const LoginScreen: React.FC = () => {
                   onChange={(e) => setCadastroData({ ...cadastroData, nome: e.target.value })}
                   placeholder="Digite seu nome de guerra"
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 />
               </div>
 
@@ -251,7 +248,7 @@ export const LoginScreen: React.FC = () => {
                   value={cadastroData.grad}
                   onChange={(e) => setCadastroData({ ...cadastroData, grad: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 >
                   <option value="">Selecione...</option>
                   {GRADUACOES.map(grad => (
@@ -269,7 +266,7 @@ export const LoginScreen: React.FC = () => {
                   value={cadastroData.quadro}
                   onChange={(e) => setCadastroData({ ...cadastroData, quadro: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 >
                   <option value="">Selecione...</option>
                   {QUADROS.map(quadro => (
@@ -287,7 +284,7 @@ export const LoginScreen: React.FC = () => {
                   value={cadastroData.unidade}
                   onChange={(e) => setCadastroData({ ...cadastroData, unidade: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 >
                   <option value="">Selecione...</option>
                   {UNIDADES.map(unidade => (
@@ -307,7 +304,7 @@ export const LoginScreen: React.FC = () => {
                   onChange={(e) => setCadastroData({ ...cadastroData, senha: e.target.value })}
                   placeholder="Mínimo 6 caracteres"
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 />
               </div>
 
@@ -322,16 +319,16 @@ export const LoginScreen: React.FC = () => {
                   onChange={(e) => setCadastroData({ ...cadastroData, confirmarSenha: e.target.value })}
                   placeholder="Digite a senha novamente"
                   className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-brand-blue sm:text-sm"
-                  disabled={loading}
+                  disabled={isRegistering}
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isRegistering}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-brand-blue-dark hover:bg-brand-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Cadastrando...' : 'Cadastrar'}
+                {isRegistering ? 'Cadastrando...' : 'Cadastrar'}
               </button>
 
               <p className="text-center text-sm text-gray-600">

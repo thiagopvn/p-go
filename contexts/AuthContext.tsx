@@ -85,6 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Register function - validates against 'militares' and creates in 'usuarios'
+  // NOTA: Não usa setLoading para evitar desmontar o LoginScreen e perder o estado do modal
   const register = useCallback(async (data: {
     rg: string;
     senha: string;
@@ -93,16 +94,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     nome: string;
     unidade: string;
   }): Promise<{ success: boolean; error?: string }> => {
-    setLoading(true);
     try {
       console.log('🔍 [CADASTRO] Iniciando validação para RG:', data.rg);
-      console.log('📌 [VERSÃO] 2024-10-30 - Quadro NÃO é validado');
 
       // First, check if already registered in usuarios collection
       const existingUserDoc = await getDoc(doc(db, 'usuarios', data.rg));
       if (existingUserDoc.exists()) {
         console.log('❌ [CADASTRO] RG já cadastrado na plataforma');
-        setLoading(false);
         return { success: false, error: 'Este RG já está cadastrado na plataforma.' };
       }
 
@@ -113,7 +111,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (!militarDoc.exists()) {
         console.log('❌ [CADASTRO] RG não encontrado na base de militares');
-        setLoading(false);
         return {
           success: false,
           error: 'Erro no cadastro. RG não encontrado na base de dados. Entre em contato com o TEN Thiago Santos, desenvolvedor do aplicativo, pelo número 21 967586628.'
@@ -126,20 +123,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Normalize strings for case-insensitive comparison
       const normalize = (str: string) => str.trim().toLowerCase();
-
-      // Log para debug - confirmar que quadro não está sendo validado
-      console.log('📋 [CADASTRO] Dados fornecidos:', {
-        grad: data.grad,
-        quadro: data.quadro,
-        nome: data.nome,
-        unidade: data.unidade
-      });
-      console.log('📋 [CADASTRO] Dados no banco:', {
-        grad: militarData.grad,
-        quadro: militarData.quadro,
-        nome: militarData.nome,
-        unidade: militarData.unidade
-      });
 
       // Validate all fields against militares data
       // IMPORTANTE: Quadro NÃO é validado - usuário pode informar qualquer valor
@@ -161,14 +144,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       ];
 
-      console.log('🔍 [CADASTRO] Campos sendo validados:', validations.map(v => v.field));
-
       // Check for validation errors
       const errors = validations.filter(v => v.provided !== v.expected);
 
       if (errors.length > 0) {
         console.log('❌ [CADASTRO] Dados divergentes:', errors);
-        setLoading(false);
         const errorFields = errors.map(e => e.field).join(', ');
         return {
           success: false,
@@ -194,13 +174,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setDoc(doc(db, 'usuarios', data.rg), newUser);
 
       console.log('✅ [CADASTRO] Usuário criado com sucesso!');
-      setLoading(false);
-      return {
-        success: true
-      };
+      return { success: true };
     } catch (error) {
       console.error('❌ [CADASTRO] Erro durante cadastro:', error);
-      setLoading(false);
       return { success: false, error: 'Erro ao cadastrar. Tente novamente.' };
     }
   }, []);
