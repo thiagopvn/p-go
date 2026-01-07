@@ -70,8 +70,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const unsubscribe = onSnapshot(
       collection(db, 'permutas'),
       (snapshot) => {
-        const permutasData = snapshot.docs.map(doc => {
+        const permutasData: Permuta[] = [];
+        const permutasComProblema: string[] = [];
+
+        snapshot.docs.forEach(doc => {
           const data = doc.data() as PermutaFirestore;
+          const docId = doc.id;
 
           // Convert Firestore data to UI data by resolving militar references
           // Use fallback data if RG not found in militares collection (manual entry)
@@ -86,15 +90,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             militarSai = data.militarSaiData as Militar;
           }
 
-          // Only include permuta if both militares are found (from lookup or fallback)
+          // Se ainda não conseguiu resolver, criar objeto militar mínimo usando o RG disponível
+          // Isso evita perder permutas quando os dados de fallback não existem
+          if (!militarEntra && data.militarEntraRg) {
+            militarEntra = {
+              rg: data.militarEntraRg,
+              nome: `[RG: ${data.militarEntraRg}]`,
+              grad: '?',
+              quadro: '?',
+              unidade: '?'
+            };
+            permutasComProblema.push(`Permuta ${docId}: militarEntra RG ${data.militarEntraRg} não encontrado`);
+          }
+          if (!militarSai && data.militarSaiRg) {
+            militarSai = {
+              rg: data.militarSaiRg,
+              nome: `[RG: ${data.militarSaiRg}]`,
+              grad: '?',
+              quadro: '?',
+              unidade: '?'
+            };
+            permutasComProblema.push(`Permuta ${docId}: militarSai RG ${data.militarSaiRg} não encontrado`);
+          }
+
+          // Incluir permuta se tiver dados mínimos (pelo menos os RGs)
           if (militarEntra && militarSai) {
-            return {
-              id: data.id,
+            permutasData.push({
+              id: data.id || docId, // Usar docId como fallback se data.id não existir
               data: data.data,
               funcao: data.funcao,
               militarEntra,
               militarSai,
-              status: data.status,
+              status: data.status || 'Pendente',
               enviada: data.enviada || false,
               dataEnvio: data.dataEnvio,
               arquivada: data.arquivada || false,
@@ -103,11 +130,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               confirmadaPorMilitarSai: data.confirmadaPorMilitarSai || false,
               dataConfirmacaoMilitarEntra: data.dataConfirmacaoMilitarEntra,
               dataConfirmacaoMilitarSai: data.dataConfirmacaoMilitarSai
-            } as Permuta;
+            });
+          } else {
+            // Log crítico: permuta sem RGs não pode ser exibida
+            console.error(`❌ [PERMUTAS] Permuta ${docId} descartada: falta militarEntraRg ou militarSaiRg`, data);
           }
-          return null;
-        }).filter((p): p is Permuta => p !== null);
+        });
 
+        // Log de permutas com problemas de resolução
+        if (permutasComProblema.length > 0) {
+          console.warn('⚠️ [PERMUTAS] Algumas permutas têm militares não encontrados:', permutasComProblema);
+        }
+
+        console.log(`📋 [PERMUTAS] Carregadas ${permutasData.length} permutas (${snapshot.docs.length} documentos no Firestore)`);
         setPermutas(permutasData);
       },
       (error) => {
