@@ -13,10 +13,20 @@ const statusStyles: { [key in Permuta['status']]: string } = {
   Rejeitada: 'bg-red-100 text-red-800 border-red-400',
 };
 
+// Função para verificar se o militar não está cadastrado (dados incompletos)
+const isMilitarNaoCadastrado = (militar: { grad?: string; nome?: string }) => {
+  return militar.grad === '?' || militar.nome?.startsWith('[RG:');
+};
+
 export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
   const { selectPermuta, inverterMilitaresPermuta } = useAppContext();
   const { currentUser } = useAuth();
   const [isInverting, setIsInverting] = useState(false);
+
+  // Verificar se algum militar não está cadastrado
+  const militarSaiNaoCadastrado = isMilitarNaoCadastrado(permuta.militarSai);
+  const militarEntraNaoCadastrado = isMilitarNaoCadastrado(permuta.militarEntra);
+  const temMilitarNaoCadastrado = militarSaiNaoCadastrado || militarEntraNaoCadastrado;
 
   // Verificar se o usuário atual é o criador da permuta (quem solicitou)
   const isCriador = currentUser && (
@@ -48,9 +58,18 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
     <div
       onClick={() => selectPermuta(permuta)}
       className={`bg-white rounded-xl shadow-lg hover:shadow-xl sm:hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden border-t-4 active:scale-[0.98] ${
-        permuta.enviada ? 'border-green-500' : 'border-brand-blue'
+        temMilitarNaoCadastrado ? 'border-orange-500' : permuta.enviada ? 'border-green-500' : 'border-brand-blue'
       }`}
     >
+      {/* Alerta de militar não cadastrado */}
+      {temMilitarNaoCadastrado && (
+        <div className="bg-orange-100 border-b border-orange-200 px-3 py-1.5 flex items-center gap-2">
+          <span className="text-orange-600 text-sm">⚠️</span>
+          <span className="text-orange-700 text-[10px] sm:text-xs font-medium">
+            Militar não cadastrado
+          </span>
+        </div>
+      )}
       <div className="p-3 sm:p-4 md:p-5">
         {/* Header do card */}
         <div className="flex justify-between items-start mb-2 sm:mb-3">
@@ -108,11 +127,18 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
 
         {/* Militares info */}
         <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-          <div className="p-2 sm:p-3 bg-red-50 rounded-md relative">
+          <div className={`p-2 sm:p-3 rounded-md relative ${militarSaiNaoCadastrado ? 'bg-orange-50 border border-orange-300' : 'bg-red-50'}`}>
             <div className="flex justify-between items-start gap-2">
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-red-600 text-xs sm:text-sm">SAI:</p>
-                <p className="text-gray-800 truncate text-xs sm:text-sm">{permuta.militarSai.grad} {permuta.militarSai.nome}</p>
+                <div className="flex items-center gap-1">
+                  <p className="font-bold text-red-600 text-xs sm:text-sm">SAI:</p>
+                  {militarSaiNaoCadastrado && (
+                    <span className="text-orange-500 text-[10px]" title="Militar não cadastrado">⚠️</span>
+                  )}
+                </div>
+                <p className={`truncate text-xs sm:text-sm ${militarSaiNaoCadastrado ? 'text-orange-700' : 'text-gray-800'}`}>
+                  {permuta.militarSai.grad} {permuta.militarSai.nome}
+                </p>
                 <p className="text-gray-500 text-[10px] sm:text-xs">RG: {permuta.militarSai.rg}</p>
               </div>
               {permuta.confirmadaPorMilitarSai ? (
@@ -131,11 +157,18 @@ export const PermutaCard: React.FC<PermutaCardProps> = ({ permuta }) => {
               )}
             </div>
           </div>
-          <div className="p-2 sm:p-3 bg-green-50 rounded-md relative">
+          <div className={`p-2 sm:p-3 rounded-md relative ${militarEntraNaoCadastrado ? 'bg-orange-50 border border-orange-300' : 'bg-green-50'}`}>
             <div className="flex justify-between items-start gap-2">
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-green-600 text-xs sm:text-sm">ENTRA:</p>
-                <p className="text-gray-800 truncate text-xs sm:text-sm">{permuta.militarEntra.grad} {permuta.militarEntra.nome}</p>
+                <div className="flex items-center gap-1">
+                  <p className="font-bold text-green-600 text-xs sm:text-sm">ENTRA:</p>
+                  {militarEntraNaoCadastrado && (
+                    <span className="text-orange-500 text-[10px]" title="Militar não cadastrado">⚠️</span>
+                  )}
+                </div>
+                <p className={`truncate text-xs sm:text-sm ${militarEntraNaoCadastrado ? 'text-orange-700' : 'text-gray-800'}`}>
+                  {permuta.militarEntra.grad} {permuta.militarEntra.nome}
+                </p>
                 <p className="text-gray-500 text-[10px] sm:text-xs">RG: {permuta.militarEntra.rg}</p>
               </div>
               {permuta.confirmadaPorMilitarEntra ? (
