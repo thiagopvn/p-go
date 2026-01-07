@@ -142,7 +142,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           console.warn('⚠️ [PERMUTAS] Algumas permutas têm militares não encontrados:', permutasComProblema);
         }
 
+        // Análise dos dados carregados
+        const analise = {
+          total: permutasData.length,
+          pendentes: permutasData.filter(p => p.status === 'Pendente' && !p.arquivada).length,
+          processadas: permutasData.filter(p => p.status !== 'Pendente' && !p.arquivada).length,
+          arquivadas: permutasData.filter(p => p.arquivada).length,
+          porStatus: {
+            Pendente: permutasData.filter(p => p.status === 'Pendente').length,
+            Aprovada: permutasData.filter(p => p.status === 'Aprovada').length,
+            Rejeitada: permutasData.filter(p => p.status === 'Rejeitada').length,
+          }
+        };
         console.log(`📋 [PERMUTAS] Carregadas ${permutasData.length} permutas (${snapshot.docs.length} documentos no Firestore)`);
+        console.log('📊 [PERMUTAS] Análise:', analise);
         setPermutas(permutasData);
       },
       (error) => {
